@@ -1,0 +1,6 @@
+Bước đầu thành lập các đối tượng trong game
+
+1, Bản đồ
+2, Xe tang
+3, Vật phẩm
+4, Background
