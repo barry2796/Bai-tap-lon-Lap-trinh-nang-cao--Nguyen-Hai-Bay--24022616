@@ -1,1 +1,2 @@
-# B-i-t-p-l-n-L-p-tr-nh-n-ng-cao-Sinh-vi-n-Nguy-n-Hai-B-y--MSV-24022616
+Bai tap lon Lap trinh nang cao
+Nguyen Hai Bay-MSV: 24022616
