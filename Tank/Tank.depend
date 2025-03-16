@@ -1,0 +1,29 @@
+# depslib dependency file v1.0
+1742057374 source:d:\tap tanh code game\bai tap lon lap trinh nang cao- nguyen hai bay- 24022616\bai-tap-lon-lap-trinh-nang-cao--nguyen-hai-bay--24022616\tank\tank code.cpp
+	<iostream>
+	<SDL.h>
+	<SDL_image.h>
+	"Tank.h"
+	"Map.h"
+	"Game.h"
+	"Wall.h"
+
+1742105452 d:\tap tanh code game\bai tap lon lap trinh nang cao- nguyen hai bay- 24022616\bai-tap-lon-lap-trinh-nang-cao--nguyen-hai-bay--24022616\tank\tank.h
+	"Const.h"
+	<SDL.h>
+
+1742044441 d:\tap tanh code game\bai tap lon lap trinh nang cao- nguyen hai bay- 24022616\bai-tap-lon-lap-trinh-nang-cao--nguyen-hai-bay--24022616\tank\map.h
+
+1742105452 d:\tap tanh code game\bai tap lon lap trinh nang cao- nguyen hai bay- 24022616\bai-tap-lon-lap-trinh-nang-cao--nguyen-hai-bay--24022616\tank\game.h
+	<iostream>
+	<SDL.h>
+	<vector>
+	"Wall.h"
+	"Const.h"
+
+1742105712 d:\tap tanh code game\bai tap lon lap trinh nang cao- nguyen hai bay- 24022616\bai-tap-lon-lap-trinh-nang-cao--nguyen-hai-bay--24022616\tank\wall.h
+	"Const.h"
+
+1742105626 d:\tap tanh code game\bai tap lon lap trinh nang cao- nguyen hai bay- 24022616\bai-tap-lon-lap-trinh-nang-cao--nguyen-hai-bay--24022616\tank\const.h
+	<iostream>
+

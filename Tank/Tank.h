@@ -1,6 +1,6 @@
 #ifndef TANK_H
 #define TANK_H
-
+#include "Const.h"
 #include <SDL.h>
 
 class Tank {

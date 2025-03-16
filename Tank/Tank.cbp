@@ -32,7 +32,12 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
+		<Unit filename="EnemyTank.h" />
+		<Unit filename="Game.h" />
+		<Unit filename="Map.h" />
 		<Unit filename="Tank code.cpp" />
+		<Unit filename="Tank.h" />
+		<Unit filename="Wall.h" />
 		<Extensions />
 	</Project>
 </CodeBlocks_project_file>

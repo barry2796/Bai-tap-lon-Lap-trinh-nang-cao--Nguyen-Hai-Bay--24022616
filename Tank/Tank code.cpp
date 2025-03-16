@@ -8,8 +8,12 @@
 
 using namespace std;
 
-int main()
+int main(int argc, char* argv[])
+
 {
-    cout << "Hello world!" << endl;
+    Game game;
+    if(game.chayCtrinh){
+        game.chay();
+    }
     return 0;
 }

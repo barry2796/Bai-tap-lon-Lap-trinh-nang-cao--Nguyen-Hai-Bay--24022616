@@ -1,12 +1,24 @@
-class wall{
+#ifndef WALL_H
+#define WALL_H
+#include "Const.h"
+
+class Wall{
 public:
-   int x,yl;
+   int x,y;
    SDL_Rect rect;
    bool active;
-   wall(){
+   wall(int startX, int startY){
+       x=startX;
+       y=startY;
+       active=true;
+       rect = {x,y, TILE_SIZE,TILE_SIZE};
    };
-   void render(){
+   void render(SDL_Renderer* renderer){
+       if(active){
+        SDL_SetRenderDrawColor(renderer,150,75,0,255);
+        SDL_RenderFillRect(renderer, &rect);
+       }
    };
-   void generateWalls(){
-   };
+
 };
+#endif WALL_H
