@@ -12,8 +12,8 @@ int main(int argc, char* argv[])
 
 {
     Game game;
-    if(game.chayCtrinh){
-        game.chay();
+    if(game.running){
+        game.run();
     }
     return 0;
 }
