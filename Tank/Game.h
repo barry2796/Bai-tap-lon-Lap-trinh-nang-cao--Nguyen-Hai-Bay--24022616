@@ -40,7 +40,7 @@ public:
 
 
     generateWalls();
-    player = PlayerTank(renderer,((MAP_WIDTH - 1) / 2) * TILE_SIZE, (MAP_HEIGHT - 2) * TILE_SIZE);
+    player = PlayerTank(((MAP_WIDTH - 1) / 2) * TILE_SIZE, (MAP_HEIGHT - 2) * TILE_SIZE);
     spawnEnemies();
 
 
@@ -83,8 +83,8 @@ public:
 }
 
     void generateWalls() {
-    for (int i = 3; i < MAP_HEIGHT - 3; i += 2) {
-        for (int j = 3; j < MAP_WIDTH - 3; j += 2) {
+    for (int i = 3; i < MAP_HEIGHT - 3; i += 3) {
+        for (int j = 3; j < MAP_WIDTH - 3; j += 3) {
             Wall w = Wall(j * TILE_SIZE, i * TILE_SIZE);
             walls.push_back(w);
         }
@@ -103,6 +103,7 @@ void handleEvents() {
                 case SDLK_LEFT: player.move(-5, 0, walls); break;
                 case SDLK_RIGHT: player.move(5, 0, walls); break;
                 case SDLK_SPACE: player.shoot(); break;
+                case SDLK_ESCAPE: running=false;
             }
         }
     }

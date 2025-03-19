@@ -1,4 +1,4 @@
-#ifndef ENEMYTANK_H
+#   ifndef ENEMYTANK_H
 #define ENEMYTANK_H
 #include <iostream>
 #include <SDL.h>
