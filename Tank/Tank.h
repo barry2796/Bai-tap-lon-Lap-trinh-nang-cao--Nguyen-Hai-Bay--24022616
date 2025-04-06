@@ -13,13 +13,13 @@ public:
     int dirX, dirY;
     SDL_Rect rect;
     vector<Bullet> bullets;
-
-    PlayerTank(int startX, int startY) {
+    SDL_Texture* texture;
+    PlayerTank(int startX, int startY/*, SDL_Renderer* renderer*/) {
         x = startX;
         y = startY;
         rect = {x, y, TILE_SIZE, TILE_SIZE};
         dirX = 0;
-        dirY = -1; // Default direction up
+        dirY = -1; // Default direction up                                                                                                                                                                                                                                     texture = loadTexture("player_tank.png",renderer);
     }
     PlayerTank() {}
 
@@ -60,6 +60,7 @@ void updateBullets() {
 }
 
 void render(SDL_Renderer* renderer) {
+    SDL_RenderCopy(renderer, texture, NULL, &rect);
     SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
     SDL_RenderFillRect(renderer, &rect);
     for (auto &bullet : bullets) {

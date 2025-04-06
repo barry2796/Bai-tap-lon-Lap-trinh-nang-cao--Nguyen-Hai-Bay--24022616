@@ -8,7 +8,7 @@
 	"Game.h"
 	"Wall.h"
 
-1742351194 d:\tap tanh code game\bai tap lon lap trinh nang cao- nguyen hai bay- 24022616\bai-tap-lon-lap-trinh-nang-cao--nguyen-hai-bay--24022616\tank\tank.h
+1742716451 d:\tap tanh code game\bai tap lon lap trinh nang cao- nguyen hai bay- 24022616\bai-tap-lon-lap-trinh-nang-cao--nguyen-hai-bay--24022616\tank\tank.h
 	"Const.h"
 	<SDL.h>
 	<SDL_image.h>
@@ -31,13 +31,13 @@
 1742134659 d:\tap tanh code game\bai tap lon lap trinh nang cao- nguyen hai bay- 24022616\bai-tap-lon-lap-trinh-nang-cao--nguyen-hai-bay--24022616\tank\wall.h
 	"Const.h"
 
-1742173307 d:\tap tanh code game\bai tap lon lap trinh nang cao- nguyen hai bay- 24022616\bai-tap-lon-lap-trinh-nang-cao--nguyen-hai-bay--24022616\tank\const.h
+1743500710 d:\tap tanh code game\bai tap lon lap trinh nang cao- nguyen hai bay- 24022616\bai-tap-lon-lap-trinh-nang-cao--nguyen-hai-bay--24022616\tank\const.h
 	<iostream>
 
 1742134845 d:\tap tanh code game\bai tap lon lap trinh nang cao- nguyen hai bay- 24022616\bai-tap-lon-lap-trinh-nang-cao--nguyen-hai-bay--24022616\tank\bullet.h
 	<algorithm>
 
-1742326894 d:\tap tanh code game\bai tap lon lap trinh nang cao- nguyen hai bay- 24022616\bai-tap-lon-lap-trinh-nang-cao--nguyen-hai-bay--24022616\tank\enemytank.h
+1742424819 d:\tap tanh code game\bai tap lon lap trinh nang cao- nguyen hai bay- 24022616\bai-tap-lon-lap-trinh-nang-cao--nguyen-hai-bay--24022616\tank\enemytank.h
 	<iostream>
 	<SDL.h>
 	<SDL_image.h>
