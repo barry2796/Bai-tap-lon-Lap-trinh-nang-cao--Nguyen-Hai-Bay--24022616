@@ -13,7 +13,7 @@ public:
     bool running;
     vector<Wall> walls;
     PlayerTank player;
-    int enemyNumber = 10;
+    int enemyNumber = 3;
     vector<EnemyTank> enemies;
 
 
@@ -40,7 +40,7 @@ public:
 
 
     generateWalls();
-    player = PlayerTank(((MAP_WIDTH - 1) / 2) * TILE_SIZE, (MAP_HEIGHT - 2) * TILE_SIZE);
+    player = PlayerTank(((MAP_WIDTH - 1) / 2) * TILE_SIZE, (MAP_HEIGHT - 2) * TILE_SIZE,renderer);
     spawnEnemies();
 
 
@@ -83,9 +83,9 @@ public:
 }
 
     void generateWalls() {
-    for (int i = 3; i < MAP_HEIGHT - 3; i += 3) {
-        for (int j = 3; j < MAP_WIDTH - 3; j += 3) {
-            Wall w = Wall(j * TILE_SIZE, i * TILE_SIZE);
+    for (int i = 3; i < MAP_HEIGHT - 3; i += 2) {
+        for (int j = 3; j < MAP_WIDTH - 3; j += 2) {
+            Wall w = Wall(j * TILE_SIZE, i * TILE_SIZE,renderer);
             walls.push_back(w);
         }
     }
