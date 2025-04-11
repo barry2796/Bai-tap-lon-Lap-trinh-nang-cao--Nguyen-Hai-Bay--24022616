@@ -6,6 +6,7 @@
 #include "Tank.h"
 #include "Bullet.h"
 #include "EnemyTank.h"
+
 class Game {
 public:
     SDL_Window* window;
@@ -13,7 +14,7 @@ public:
     bool running;
     vector<Wall> walls;
     PlayerTank player;
-    int enemyNumber = 3;
+    int enemyNumber = 10;
     vector<EnemyTank> enemies;
 
 
@@ -102,7 +103,7 @@ void handleEvents() {
                 case SDLK_DOWN: player.move(0, 5, walls); break;
                 case SDLK_LEFT: player.move(-5, 0, walls); break;
                 case SDLK_RIGHT: player.move(5, 0, walls); break;
-                case SDLK_SPACE: player.shoot(); break;
+                case SDLK_SPACE: player.shoot(renderer); break;
                 case SDLK_ESCAPE: running=false;
             }
         }
@@ -114,10 +115,11 @@ void update() {
     player.updateBullets();
 
     for (auto& enemy : enemies) {
-        enemy.move(walls);
+        //enemy.move(walls);
+        enemy.moveTowardPlayer(player.x,player.y,walls);
         enemy.updateBullets();
         if (rand() % 100 < 2) {
-            enemy.shoot();
+            enemy.shoot(renderer);
         }
     }
 
@@ -180,8 +182,9 @@ void spawnEnemies() {
         int ex, ey;
         bool validPosition = false;
         while (!validPosition) {
+            //vùng spawn là nửa trên của map, quá ngon, người chơi chỉ cần đứng dưới spam là win
             ex = (rand() % (MAP_WIDTH - 2) + 1) * TILE_SIZE;
-            ey = (rand() % (MAP_HEIGHT - 2) + 1) * TILE_SIZE;
+            ey = (rand() % (MAP_HEIGHT/2 - 2) + 1) * TILE_SIZE;
             validPosition = true;
             for (const auto& wall : walls) {
                 if (wall.active && wall.x == ex && wall.y == ey) {
@@ -190,7 +193,7 @@ void spawnEnemies() {
                 }
             }
         }
-        enemies.push_back(EnemyTank(ex, ey));
+        enemies.push_back(EnemyTank(ex, ey,renderer));
     }
 }
 

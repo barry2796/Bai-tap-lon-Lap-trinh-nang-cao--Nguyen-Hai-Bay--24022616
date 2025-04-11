@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1742134883 source:d:\tap tanh code game\bai tap lon lap trinh nang cao- nguyen hai bay- 24022616\bai-tap-lon-lap-trinh-nang-cao--nguyen-hai-bay--24022616\tank\tank code.cpp
+1744335254 source:d:\tap tanh code game\bai tap lon lap trinh nang cao- nguyen hai bay- 24022616\bai-tap-lon-lap-trinh-nang-cao--nguyen-hai-bay--24022616\tank\tank code.cpp
 	<iostream>
 	<SDL.h>
 	<SDL_image.h>
@@ -7,18 +7,21 @@
 	"Map.h"
 	"Game.h"
 	"Wall.h"
+	<ctime>
+	<cstdlib>
 
-1744175617 d:\tap tanh code game\bai tap lon lap trinh nang cao- nguyen hai bay- 24022616\bai-tap-lon-lap-trinh-nang-cao--nguyen-hai-bay--24022616\tank\tank.h
+1744355368 d:\tap tanh code game\bai tap lon lap trinh nang cao- nguyen hai bay- 24022616\bai-tap-lon-lap-trinh-nang-cao--nguyen-hai-bay--24022616\tank\tank.h
 	"Const.h"
 	<SDL.h>
 	<SDL_image.h>
 	<vector>
 	"Wall.h"
 	"Bullet.h"
+	<algorithm>
 
 1742044441 d:\tap tanh code game\bai tap lon lap trinh nang cao- nguyen hai bay- 24022616\bai-tap-lon-lap-trinh-nang-cao--nguyen-hai-bay--24022616\tank\map.h
 
-1744175593 d:\tap tanh code game\bai tap lon lap trinh nang cao- nguyen hai bay- 24022616\bai-tap-lon-lap-trinh-nang-cao--nguyen-hai-bay--24022616\tank\game.h
+1744355406 d:\tap tanh code game\bai tap lon lap trinh nang cao- nguyen hai bay- 24022616\bai-tap-lon-lap-trinh-nang-cao--nguyen-hai-bay--24022616\tank\game.h
 	<iostream>
 	<SDL.h>
 	<vector>
@@ -34,10 +37,13 @@
 1744171215 d:\tap tanh code game\bai tap lon lap trinh nang cao- nguyen hai bay- 24022616\bai-tap-lon-lap-trinh-nang-cao--nguyen-hai-bay--24022616\tank\const.h
 	<iostream>
 
-1742134845 d:\tap tanh code game\bai tap lon lap trinh nang cao- nguyen hai bay- 24022616\bai-tap-lon-lap-trinh-nang-cao--nguyen-hai-bay--24022616\tank\bullet.h
-	<algorithm>
+1744355851 d:\tap tanh code game\bai tap lon lap trinh nang cao- nguyen hai bay- 24022616\bai-tap-lon-lap-trinh-nang-cao--nguyen-hai-bay--24022616\tank\bullet.h
+	<SDL.h>
+	<SDL_image.h>
+	<iostream>
+	"Const.h"
 
-1742424819 d:\tap tanh code game\bai tap lon lap trinh nang cao- nguyen hai bay- 24022616\bai-tap-lon-lap-trinh-nang-cao--nguyen-hai-bay--24022616\tank\enemytank.h
+1744355370 d:\tap tanh code game\bai tap lon lap trinh nang cao- nguyen hai bay- 24022616\bai-tap-lon-lap-trinh-nang-cao--nguyen-hai-bay--24022616\tank\enemytank.h
 	<iostream>
 	<SDL.h>
 	<SDL_image.h>
