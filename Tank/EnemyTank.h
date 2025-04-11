@@ -26,7 +26,7 @@ public:
         x = startX;
         y = startY;
         enemyTankTexture = IMG_LoadTexture(renderer,"enemyTank.png");
-        rect = {x, y, TILE_SIZE, TILE_SIZE};
+        rect = {x, y, TILE_SIZE*2, TILE_SIZE*2};
         dirX = 0;
         dirY = 1;
         active = true;
@@ -100,7 +100,7 @@ void moveTowardPlayer(int playerX, int playerY, const vector<Wall>& walls) {
     // kiểm tra va chạm với tường
     int newX = x + dx;
     int newY = y + dy;
-    SDL_Rect newRect = { newX, newY, TILE_SIZE, TILE_SIZE };
+    SDL_Rect newRect = { newX, newY, TILE_SIZE*2, TILE_SIZE*2 };
 
     for (const auto& wall : walls) {
         if (wall.active && SDL_HasIntersection(&newRect, &wall.rect)) {
@@ -128,7 +128,7 @@ void moveTowardPlayer(int playerX, int playerY, const vector<Wall>& walls) {
     void shoot(SDL_Renderer* renderer) {
     if (--shootDelay > 0) return;
     shootDelay = 5;
-    bullets.push_back(Bullet(x + TILE_SIZE / 2 - 5, y + TILE_SIZE / 2 - 5,
+    bullets.push_back(Bullet(x + TILE_SIZE  - 7, y + TILE_SIZE - 7,
                              this->dirX, this->dirY,renderer));
 }
 

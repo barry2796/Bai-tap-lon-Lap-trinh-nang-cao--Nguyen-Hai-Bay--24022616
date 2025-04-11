@@ -6,7 +6,7 @@
 #include "Tank.h"
 #include "Bullet.h"
 #include "EnemyTank.h"
-
+#include <fstream>
 class Game {
 public:
     SDL_Window* window;
@@ -14,7 +14,7 @@ public:
     bool running;
     vector<Wall> walls;
     PlayerTank player;
-    int enemyNumber = 10;
+    int enemyNumber = 3;
     vector<EnemyTank> enemies;
 
 
@@ -41,7 +41,7 @@ public:
 
 
     generateWalls();
-    player = PlayerTank(((MAP_WIDTH - 1) / 2) * TILE_SIZE, (MAP_HEIGHT - 2) * TILE_SIZE,renderer);
+    player = PlayerTank(((MAP_WIDTH - 1) / 2) * TILE_SIZE, (MAP_HEIGHT-5) * TILE_SIZE,renderer);
     spawnEnemies();
 
 
@@ -52,8 +52,8 @@ public:
     SDL_RenderClear(renderer); // delete color
 
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-    for (int i = 1; i < MAP_HEIGHT - 1; ++i) {
-        for (int j = 1; j < MAP_WIDTH - 1; ++j) {
+    for (int i = 2; i < MAP_HEIGHT - 3; i++) {
+        for (int j = 2; j < MAP_WIDTH - 1 && j < 26; j++) {
             SDL_Rect tile = { j * TILE_SIZE, i * TILE_SIZE, TILE_SIZE, TILE_SIZE };
             SDL_RenderFillRect(renderer, &tile);
         }
@@ -84,10 +84,27 @@ public:
 }
 
     void generateWalls() {
-    for (int i = 3; i < MAP_HEIGHT - 3; i += 2) {
+
+
+    ifstream file("Map.txt");
+    char a[26][26];
+     for (int i = 0; i < 26; i++) {
+        for (int j = 0; j < 26; j++) {
+            file >> a[i][j];  // Ä‘á»c tá»«ng kÃ½ tá»±
+        }
+    }
+    /*(for (int i = 3; i < MAP_HEIGHT - 3; i += 2) {
         for (int j = 3; j < MAP_WIDTH - 3; j += 2) {
             Wall w = Wall(j * TILE_SIZE, i * TILE_SIZE,renderer);
             walls.push_back(w);
+        }
+    }*/
+    for (int i = 0; i < 26; i++) {
+        for (int j = 0; j < 28; j++) {
+            if (a[i][j] == '#') {  // vÃ­ dá»¥: dáº¥u '#' Ä‘áº¡i diá»‡n cho tÆ°á»ng
+                Wall w = Wall((j+2) * TILE_SIZE, (i+1) * TILE_SIZE, renderer);
+                walls.push_back(w);
+            }
         }
     }
 }
@@ -99,10 +116,10 @@ void handleEvents() {
             running = false;
         } else if (event.type == SDL_KEYDOWN) {
             switch (event.key.keysym.sym) {
-                case SDLK_UP: player.move(0, -5, walls); break;
-                case SDLK_DOWN: player.move(0, 5, walls); break;
-                case SDLK_LEFT: player.move(-5, 0, walls); break;
-                case SDLK_RIGHT: player.move(5, 0, walls); break;
+                case SDLK_UP: player.move(0, -10, walls); break;
+                case SDLK_DOWN: player.move(0, 10, walls); break;
+                case SDLK_LEFT: player.move(-10, 0, walls); break;
+                case SDLK_RIGHT: player.move(10, 0, walls); break;
                 case SDLK_SPACE: player.shoot(renderer); break;
                 case SDLK_ESCAPE: running=false;
             }
@@ -183,7 +200,7 @@ void spawnEnemies() {
         bool validPosition = false;
         while (!validPosition) {
             //vùng spawn là nửa trên của map, quá ngon, người chơi chỉ cần đứng dưới spam là win
-            ex = (rand() % (MAP_WIDTH - 2) + 1) * TILE_SIZE;
+            ex = (rand() % (14 - 2) + 1) * TILE_SIZE;
             ey = (rand() % (MAP_HEIGHT/2 - 2) + 1) * TILE_SIZE;
             validPosition = true;
             for (const auto& wall : walls) {

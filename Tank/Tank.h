@@ -38,11 +38,8 @@ public:
         x = startX;
         y = startY;
         textureUp = IMG_LoadTexture(renderer, "playerTankUp.png");
-        textureRight = IMG_LoadTexture(renderer, "playerTankRight.png");
-        textureDown = IMG_LoadTexture(renderer, "playerTankDown.png");
-        textureLeft = IMG_LoadTexture(renderer, "playerTankLeft.png");
 
-        rect = {x, y, TILE_SIZE, TILE_SIZE};
+        rect = {x, y, TILE_SIZE*2, TILE_SIZE*2};
         dirX = 0;
         dirY = -1; // Default direction up                                                                                                                                                                                                                                     texture = loadTexture("player_tank.png",renderer);
     }
@@ -58,7 +55,7 @@ public:
     this->dirX = dx;
     this->dirY = dy;
 
-    SDL_Rect newRect = { newX, newY, TILE_SIZE, TILE_SIZE };
+    SDL_Rect newRect = { newX, newY, TILE_SIZE*2, TILE_SIZE*2 };
     for (int i = 0; i < walls.size(); i++) {
         if (walls[i].active && SDL_HasIntersection(&newRect, &walls[i].rect)) {
             return; // Prevent movement if colliding with a wall
@@ -85,7 +82,7 @@ public:
 
 
     void shoot(SDL_Renderer* renderer) {
-    bullets.push_back(Bullet(x + TILE_SIZE / 2 - 5, y + TILE_SIZE / 2 - 5,
+    bullets.push_back(Bullet(x + TILE_SIZE-7 , y + TILE_SIZE-7 ,
         this->dirX, this->dirY,renderer));
 }
 
