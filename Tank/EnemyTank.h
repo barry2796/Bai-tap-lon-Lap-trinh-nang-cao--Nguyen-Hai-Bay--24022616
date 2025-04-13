@@ -25,8 +25,22 @@ public:
         shootDelay = 5; // Delay for shooting
         x = startX;
         y = startY;
-        enemyTankTexture = IMG_LoadTexture(renderer,"enemyTank.png");
-        rect = {x, y, TILE_SIZE*2, TILE_SIZE*2};
+        // Load ảnh từ file vào surface
+    SDL_Surface* tempSurface = IMG_Load("enemyTank.png");
+    if (!tempSurface) {
+        printf("Failed to load surface: %s\n", IMG_GetError());
+    }
+
+    // Set colorkey để làm trong suốt nền đen
+    SDL_SetColorKey(tempSurface, SDL_TRUE, SDL_MapRGB(tempSurface->format, 0, 0, 0));
+
+    // Tạo texture từ surface sau khi đã xử lý colorkey
+    enemyTankTexture = SDL_CreateTextureFromSurface(renderer, tempSurface);
+    SDL_FreeSurface(tempSurface);
+
+    // Blend để hỗ trợ trong suốt
+    SDL_SetTextureBlendMode(enemyTankTexture, SDL_BLENDMODE_BLEND);
+        rect = {x, y, TILE_SIZE, TILE_SIZE};
         dirX = 0;
         dirY = 1;
         active = true;
@@ -82,11 +96,12 @@ void move(const vector<Wall>& walls) {
 }
 */
 
-
-void moveTowardPlayer(int playerX, int playerY, const vector<Wall>& walls) {
+bool isHidden;
+bool isIce;
+void moveTowardPlayer(int playerX, int playerY, const vector<Wall>& walls,const vector<Stone>& stones,const vector<Bush>& bushes,const vector<Ice>& ices,const vector<Water>& watered) {
     if (--moveDelay > 0) return;
 
-    moveDelay = 60; // delay càng cao thì tank càng chậm
+    moveDelay =50; // delay càng cao thì tank càng chậm
 
     int dx = 0, dy = 0;
 
@@ -100,12 +115,22 @@ void moveTowardPlayer(int playerX, int playerY, const vector<Wall>& walls) {
     // kiểm tra va chạm với tường
     int newX = x + dx;
     int newY = y + dy;
-    SDL_Rect newRect = { newX, newY, TILE_SIZE*2, TILE_SIZE*2 };
+    SDL_Rect newRect = { newX, newY, TILE_SIZE, TILE_SIZE };
 
     for (const auto& wall : walls) {
         if (wall.active && SDL_HasIntersection(&newRect, &wall.rect)) {
             return; // va tường, không di chuyển
         }
+    }
+    for (const auto& stone : stones) {
+        if (stone.active && SDL_HasIntersection(&newRect, &stone.rect)) {
+            return; // va đá, không di chuyển
+        }
+    }
+    if (newX < TILE_SIZE || newY < TILE_SIZE ||
+        newX + TILE_SIZE > SCREEN_WIDTH - TILE_SIZE * 6 ||
+        newY + TILE_SIZE > SCREEN_HEIGHT - TILE_SIZE) {
+        return;
     }
 
     // cập nhật vị trí
@@ -115,6 +140,26 @@ void moveTowardPlayer(int playerX, int playerY, const vector<Wall>& walls) {
     rect.y = y;
     dirX = dx;
     dirY = dy;
+    isHidden = false;
+for (int i = 0; i < bushes.size(); i++) {
+        if (bushes[i].active && SDL_HasIntersection(&newRect, &bushes[i].rect)) {
+            isHidden=true;
+        }
+        //kiem tra di chuyen tren bang
+    this-> isIce=false;
+    for (const auto& ice : ices) {
+        if (ice.active && SDL_HasIntersection(&newRect, &ice.rect)) {
+                this->isIce=true;
+        }
+    }
+
+    //kiem tra di chuyen duoi nuoc
+    for (const auto& water : watered) {
+        if (water.active && SDL_HasIntersection(&newRect, &water.rect)) {
+            return;
+        }
+    }
+    }
 
     if (dx < 0) dir = RIGHT;
     else if (dx > 0) dir = LEFT;
@@ -128,7 +173,7 @@ void moveTowardPlayer(int playerX, int playerY, const vector<Wall>& walls) {
     void shoot(SDL_Renderer* renderer) {
     if (--shootDelay > 0) return;
     shootDelay = 5;
-    bullets.push_back(Bullet(x + TILE_SIZE  - 7, y + TILE_SIZE - 7,
+    bullets.push_back(Bullet(x + TILE_SIZE/2 - 5, y + TILE_SIZE/2 - 5,
                              this->dirX, this->dirY,renderer));
 }
 

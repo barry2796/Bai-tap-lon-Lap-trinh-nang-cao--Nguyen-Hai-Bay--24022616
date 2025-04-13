@@ -7,6 +7,12 @@
 #include "Wall.h"
 #include "Bullet.h"
 #include <algorithm>
+
+
+#define MAP_LEFT_BOUND (TILE_SIZE)
+#define MAP_TOP_BOUND (TILE_SIZE)
+#define MAP_RIGHT_BOUND ((MAP_WIDTH - 6) * TILE_SIZE)
+#define MAP_BOTTOM_BOUND ((MAP_HEIGHT - 1) * TILE_SIZE)
 using namespace std;
 class PlayerTank {
 public:
@@ -18,13 +24,9 @@ public:
 
     vector<Bullet> bullets;
 
+
     SDL_Texture* textureUp;
 
-    SDL_Texture* textureRight;
-
-    SDL_Texture* textureDown;
-
-    SDL_Texture* textureLeft;
 
     enum Direction { UP, DOWN, LEFT, RIGHT };
 
@@ -34,42 +36,106 @@ public:
 
 
 
-    PlayerTank(int startX, int startY,SDL_Renderer* renderer) {
-        x = startX;
-        y = startY;
-        textureUp = IMG_LoadTexture(renderer, "playerTankUp.png");
+    PlayerTank(int startX, int startY, SDL_Renderer* renderer,const char* imagePath) {
+    x = startX;
+    y = startY;
 
-        rect = {x, y, TILE_SIZE*2, TILE_SIZE*2};
-        dirX = 0;
-        dirY = -1; // Default direction up                                                                                                                                                                                                                                     texture = loadTexture("player_tank.png",renderer);
+    // Load ảnh từ file vào surface
+    SDL_Surface* tempSurface = IMG_Load(imagePath);
+    if (!tempSurface) {
+        printf("Failed to load surface: %s\n", IMG_GetError());
     }
+
+    // Set colorkey để làm trong suốt nền đen
+    SDL_SetColorKey(tempSurface, SDL_TRUE, SDL_MapRGB(tempSurface->format, 0, 0, 0));
+
+    // Tạo texture từ surface sau khi đã xử lý colorkey
+    textureUp = SDL_CreateTextureFromSurface(renderer, tempSurface);
+    SDL_FreeSurface(tempSurface);
+
+    // Blend để hỗ trợ trong suốt
+    SDL_SetTextureBlendMode(textureUp, SDL_BLENDMODE_BLEND);
+
+    rect = { x, y, TILE_SIZE - 1, TILE_SIZE - 1 };
+    dirX = 0;
+    dirY = -1; // Default direction up
+}
+
     PlayerTank() {}
 
 
 
 
-
-    void move(int dx, int dy, const vector<Wall>& walls) {
+    bool isHidden;
+    bool isIce;
+void move(int dx, int dy, const vector<Wall>& walls, const vector<Stone>& stones, const vector<Bush>& bushes,const vector<Ice>& ices,const vector<Water>& watered) {
     int newX = x + dx;
     int newY = y + dy;
     this->dirX = dx;
     this->dirY = dy;
 
-    SDL_Rect newRect = { newX, newY, TILE_SIZE*2, TILE_SIZE*2 };
-    for (int i = 0; i < walls.size(); i++) {
-        if (walls[i].active && SDL_HasIntersection(&newRect, &walls[i].rect)) {
-            return; // Prevent movement if colliding with a wall
+    SDL_Rect newRect = { newX+2, newY+2, TILE_SIZE - 4, TILE_SIZE - 4 };
+
+    // Kiểm tra va chạm với tường
+    for (const auto& wall : walls) {
+        if (wall.active && SDL_HasIntersection(&newRect, &wall.rect)) {
+            return;
         }
     }
 
-    if (newX >= TILE_SIZE && newX <= SCREEN_WIDTH - TILE_SIZE * 2 &&
-        newY >= TILE_SIZE && newY <= SCREEN_HEIGHT - TILE_SIZE * 2) {
-        x = newX;
-        y = newY;
+    // Kiểm tra va chạm với đá
+    for (const auto& stone : stones) {
+        if (stone.active && SDL_HasIntersection(&newRect, &stone.rect)) {
+            return;
+        }
+    }
+    //kiem tra di chuyen tren bang
+    this->isIce = false;
+for (const auto& ice : ices) {
+    if (ice.active && SDL_HasIntersection(&newRect, &ice.rect)) {
+        this->isIce = true;
+
+        // Snap theo bước 10px
+        if (x % 10 != 0) x = (x / 10) * 10;
+        if (y % 10 != 0) y = (y / 10) * 10;
+
         rect.x = x;
         rect.y = y;
+
+        break;
+    }
+}
+
+    //kiem tra di chuyen duoi nuoc
+    for (const auto& water : watered) {
+        if (water.active && SDL_HasIntersection(&newRect, &water.rect)) {
+            return;
+        }
     }
 
+
+    // Giới hạn vùng di chuyển trong phần bản đồ
+    if (newX < TILE_SIZE || newY < TILE_SIZE ||
+        newX + TILE_SIZE >= SCREEN_WIDTH - TILE_SIZE * 6 ||
+        newY + TILE_SIZE >= SCREEN_HEIGHT - TILE_SIZE) {
+        return;
+    }
+
+    x = newX;
+    y = newY;
+    rect.x = x;
+    rect.y = y;
+
+    // Kiểm tra bụi
+    isHidden = false;
+    for (const auto& bush : bushes) {
+        if (bush.active && SDL_HasIntersection(&newRect, &bush.rect)) {
+            isHidden = true;
+            break;
+        }
+    }
+
+    // Cập nhật hướng
     if (dx > 0) dir = RIGHT;
     else if (dx < 0) dir = LEFT;
     else if (dy > 0) dir = DOWN;
@@ -81,10 +147,16 @@ public:
 
 
 
+
     void shoot(SDL_Renderer* renderer) {
-    bullets.push_back(Bullet(x + TILE_SIZE-7 , y + TILE_SIZE-7 ,
-        this->dirX, this->dirY,renderer));
+
+
+
+
+    bullets.push_back(Bullet( x + TILE_SIZE/ 2-5, y + TILE_SIZE / 2 -5,
+        this->dirX, this->dirY, renderer));
 }
+
 
 
 
@@ -105,6 +177,7 @@ void updateBullets() {
 
 void render(SDL_Renderer* renderer) {
 
+
     double angle = 0;
     switch (dir) {
         case UP: angle = 0; break;
@@ -115,11 +188,7 @@ void render(SDL_Renderer* renderer) {
 
     SDL_RenderCopyEx(renderer, textureUp, nullptr, &rect, angle, nullptr, SDL_FLIP_NONE);
 
-
-    //SDL_RenderCopy(renderer, textureUp, NULL, &rect);
-    //SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
-    //SDL_RenderFillRect(renderer, &rect);
-    for (auto &bullet : bullets) {
+    for (auto& bullet : bullets) {
         bullet.render(renderer);
     }
 }

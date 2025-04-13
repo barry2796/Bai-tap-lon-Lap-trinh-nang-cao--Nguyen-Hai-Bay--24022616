@@ -15,18 +15,28 @@ public:
     SDL_Rect rect;
     bool active;
     SDL_Texture* BulletTexture;
+    double angle; // Thêm góc xoay
 
-    Bullet(int startX, int startY, int dirX, int dirY, SDL_Renderer* renderer) {
+    Bullet(double startX, double startY, int dirX, int dirY, SDL_Renderer* renderer) {
         x = startX;
         y = startY;
         dx = dirX;
         dy = dirY;
         active = true;
+
+        // Load texture
         BulletTexture = IMG_LoadTexture(renderer, "Bullet2.png");
         if (!BulletTexture) {
             std::cerr << "Failed to load bullet texture: " << IMG_GetError() << std::endl;
         }
+
         rect = {x, y, BULLET_SIZE, BULLET_SIZE};
+
+        // Gán góc xoay dựa trên hướng
+        if (dx >0) angle = 90;
+        else if (dx <0) angle = 270;
+        else if (dy >0) angle = 180;
+        else angle = 0;
     }
 
     void move() {
@@ -43,11 +53,9 @@ public:
 
     void render(SDL_Renderer* renderer) {
         if (active) {
-            SDL_RenderCopy(renderer, BulletTexture, NULL, &rect);
+            SDL_RenderCopyEx(renderer, BulletTexture, NULL, &rect, angle, nullptr, SDL_FLIP_NONE);
         }
     }
-
-
 };
 
 #endif
