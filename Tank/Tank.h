@@ -32,7 +32,9 @@ public:
 
     Direction dir;
 
+    Uint32 lastShootTime = 0;     // thời điểm bắn cuối
 
+    static const Uint32 shootCooldown = 1500;
 
 
 
@@ -68,7 +70,7 @@ public:
 
     bool isHidden;
     bool isIce;
-void move(int dx, int dy, const vector<Wall>& walls, const vector<Stone>& stones, const vector<Bush>& bushes,const vector<Ice>& ices,const vector<Water>& watered) {
+void move(int dx, int dy, const vector<Wall>& walls, const vector<Stone>& stones, const vector<Bush>& bushes,const vector<Ice>& ices,const vector<Water>& watered,const Base base) {
     int newX = x + dx;
     int newY = y + dy;
     this->dirX = dx;
@@ -94,14 +96,6 @@ void move(int dx, int dy, const vector<Wall>& walls, const vector<Stone>& stones
 for (const auto& ice : ices) {
     if (ice.active && SDL_HasIntersection(&newRect, &ice.rect)) {
         this->isIce = true;
-
-        // Snap theo bước 10px
-        if (x % 10 != 0) x = (x / 10) * 10;
-        if (y % 10 != 0) y = (y / 10) * 10;
-
-        rect.x = x;
-        rect.y = y;
-
         break;
     }
 }
@@ -112,8 +106,10 @@ for (const auto& ice : ices) {
             return;
         }
     }
-
-
+//Kiểm tra va chạm Base
+if (base.active && SDL_HasIntersection(&newRect, &base.rect)) {
+        return;
+}
     // Giới hạn vùng di chuyển trong phần bản đồ
     if (newX < TILE_SIZE || newY < TILE_SIZE ||
         newX + TILE_SIZE >= SCREEN_WIDTH - TILE_SIZE * 6 ||
@@ -149,11 +145,18 @@ for (const auto& ice : ices) {
 
 
     void shoot(SDL_Renderer* renderer) {
+    Uint32 currentTime = SDL_GetTicks(); // thời gian hiện tại (ms)
 
+    // Nếu chưa đủ thời gian nạp đạn thì không bắn
+    if (currentTime - lastShootTime < shootCooldown) {
+        return;
+    }
 
+    // Cập nhật thời gian bắn
+    lastShootTime = currentTime;
 
-
-    bullets.push_back(Bullet( x + TILE_SIZE/ 2-5, y + TILE_SIZE / 2 -5,
+    // Tạo đạn
+    bullets.push_back(Bullet(x + TILE_SIZE / 2 - 5, y + TILE_SIZE / 2 - 5,
         this->dirX, this->dirY, renderer));
 }
 

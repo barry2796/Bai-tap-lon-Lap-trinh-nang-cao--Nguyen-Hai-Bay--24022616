@@ -3,7 +3,9 @@
 #include "Const.h"
 const int WALL_TILE_SIZE = 20;
 using namespace std;
-class Wall {
+
+//Về cơ bản, các class trong Wall.h là tương đương nhau. Sự khác nhau chỉ rõ ràng trong logic game trong Game.h
+class Wall  {
 public:
     int x, y;
     SDL_Rect rect;
@@ -13,7 +15,7 @@ public:
     Wall(int startX, int startY, SDL_Renderer* renderer) {
     x = startX;
     y = startY;
-    wallTexture = IMG_LoadTexture(renderer, "brick.png");
+    wallTexture = IMG_LoadTexture(renderer, "resource/image/brick.png");
     active = true;
     rect = {x, y, WALL_TILE_SIZE, WALL_TILE_SIZE};
 }
@@ -28,8 +30,6 @@ public:
 }
 
 };
-
-
 class Stone {
 public:
     int x, y;
@@ -40,7 +40,7 @@ public:
     Stone(int startX, int startY, SDL_Renderer* renderer) {
     x = startX;
     y = startY;
-    stoneTexture = IMG_LoadTexture(renderer, "stone.png");
+    stoneTexture = IMG_LoadTexture(renderer, "resource/image/stone.png");
     active = true;
     rect = {x, y, WALL_TILE_SIZE, WALL_TILE_SIZE};
 }
@@ -54,7 +54,7 @@ public:
     }
 }
 };
-class Bush {
+class Bush  {
 public:
     int x, y;
     SDL_Rect rect;
@@ -64,7 +64,7 @@ public:
     Bush(int startX, int startY, SDL_Renderer* renderer) {
     x = startX;
     y = startY;
-    bushTexture = IMG_LoadTexture(renderer, "bush.png");
+    bushTexture = IMG_LoadTexture(renderer, "resource/image/bush.png");
     active = true;
     rect = {x, y, WALL_TILE_SIZE, WALL_TILE_SIZE};
 }
@@ -88,7 +88,7 @@ public:
     Water(int startX, int startY, SDL_Renderer* renderer) {
     x = startX;
     y = startY;
-    waterTexture = IMG_LoadTexture(renderer, "water.png");
+    waterTexture = IMG_LoadTexture(renderer, "resource/image/water.png");
     active = true;
     rect = {x, y, WALL_TILE_SIZE, WALL_TILE_SIZE};
 }
@@ -102,7 +102,9 @@ public:
     }
 }
 };
-class Ice {
+class Ice   {
+
+
 public:
     int x, y;
     SDL_Rect rect;
@@ -112,7 +114,7 @@ public:
     Ice(int startX, int startY, SDL_Renderer* renderer) {
     x = startX;
     y = startY;
-    iceTexture = IMG_LoadTexture(renderer, "ice.png");
+    iceTexture = IMG_LoadTexture(renderer, "resource/image/ice.png");
     active = true;
     rect = {x, y, WALL_TILE_SIZE, WALL_TILE_SIZE};
 }
@@ -125,5 +127,43 @@ public:
         SDL_RenderCopy(renderer, iceTexture, NULL, &rect);
     }
 }
+};
+class Base {
+public:
+    SDL_Rect rect;
+    bool active;
+    SDL_Texture* texture;
+    SDL_Texture* destroyedTexture;
+    Base(){}
+
+    Base(int x, int y, SDL_Renderer* renderer) {
+        rect.x = x;
+        rect.y = y;
+        rect.w = TILE_SIZE;
+        rect.h = TILE_SIZE;
+        active = true;
+        texture = loadTexture("resource/image/base.png", renderer);
+        destroyedTexture = loadTexture("resource/image/base_destroyed.png", renderer);
+    }
+
+    void render(SDL_Renderer* renderer) {
+        if (active) {
+            SDL_RenderCopy(renderer, texture, NULL, &rect);
+        }
+        else {
+            SDL_RenderCopy(renderer, destroyedTexture, NULL, &rect);
+        }
+    }
+
+    SDL_Texture* loadTexture(const string& path, SDL_Renderer* renderer) {
+        SDL_Surface* surface = IMG_Load(path.c_str());
+        if (!surface) {
+            cerr << "Failed to load base image: " << IMG_GetError() << endl;
+            return nullptr;
+        }
+        SDL_Texture* tex = SDL_CreateTextureFromSurface(renderer, surface);
+        SDL_FreeSurface(surface);
+        return tex;
+    }
 };
 #endif WALL_H

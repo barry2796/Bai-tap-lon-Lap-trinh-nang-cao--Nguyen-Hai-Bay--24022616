@@ -2,34 +2,89 @@
 <CodeBlocks_layout_file>
 	<FileVersion major="1" minor="0" />
 	<ActiveTarget name="Debug" />
-	<File name="Tank code.cpp" open="1" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="119" topLine="0" />
-		</Cursor>
-	</File>
 	<File name="Game.h" open="1" top="1" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="332" topLine="0" />
+			<Cursor1 position="21010" topLine="466" />
+		</Cursor>
+		<Folding>
+			<Collapse line="116" />
+			<Collapse line="173" />
+			<Collapse line="231" />
+			<Collapse line="261" />
+			<Collapse line="262" />
+			<Collapse line="269" />
+			<Collapse line="274" />
+			<Collapse line="279" />
+			<Collapse line="284" />
+			<Collapse line="326" />
+			<Collapse line="357" />
+		</Folding>
+	</File>
+	<File name="Tank code.cpp" open="1" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="65" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="Const.h" open="1" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="15" topLine="0" />
 		</Cursor>
 	</File>
 	<File name="Wall.h" open="1" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="1900" topLine="49" />
+			<Cursor1 position="3406" topLine="41" />
 		</Cursor>
+		<Folding>
+			<Collapse line="7" />
+			<Collapse line="32" />
+			<Collapse line="49" />
+			<Collapse line="56" />
+			<Collapse line="80" />
+		</Folding>
 	</File>
-	<File name="Map.h" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="Tank.h" open="1" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="-1" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="0" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="Tank.h" open="1" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1692" topLine="0" />
+			<Cursor1 position="1832" topLine="60" />
 		</Cursor>
 	</File>
 	<File name="EnemyTank.h" open="1" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="2789" topLine="83" />
+			<Cursor1 position="3082" topLine="68" />
+		</Cursor>
+		<Folding>
+			<Collapse line="22" />
+			<Collapse line="32" />
+			<Collapse line="132" />
+			<Collapse line="133" />
+			<Collapse line="137" />
+			<Collapse line="140" />
+			<Collapse line="144" />
+			<Collapse line="160" />
+			<Collapse line="161" />
+			<Collapse line="169" />
+			<Collapse line="170" />
+			<Collapse line="196" />
+			<Collapse line="199" />
+			<Collapse line="205" />
+			<Collapse line="208" />
+			<Collapse line="212" />
+			<Collapse line="216" />
+			<Collapse line="220" />
+			<Collapse line="234" />
+		</Folding>
+	</File>
+	<File name="Bullet.h" open="1" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="187" topLine="0" />
+		</Cursor>
+		<Folding>
+			<Collapse line="10" />
+			<Collapse line="41" />
+		</Folding>
+	</File>
+	<File name="Map.h" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="0" topLine="0" />
 		</Cursor>
 	</File>
 </CodeBlocks_layout_file>

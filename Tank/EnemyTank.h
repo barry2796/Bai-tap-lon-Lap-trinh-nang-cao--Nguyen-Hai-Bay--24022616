@@ -19,26 +19,35 @@ public:
     enum Direction { UP, DOWN, LEFT, RIGHT };
     Direction dir;
 
-
+//Constructor
     EnemyTank(int startX, int startY,SDL_Renderer* renderer) {
         moveDelay = 15; // Delay for movement
         shootDelay = 5; // Delay for shooting
         x = startX;
         y = startY;
-        // Load ảnh từ file vào surface
-    SDL_Surface* tempSurface = IMG_Load("enemyTank.png");
+
+
+
+//Load ảnh từ file vào surface
+    SDL_Surface* tempSurface = IMG_Load("resource/image/enemyTank.png");
     if (!tempSurface) {
         printf("Failed to load surface: %s\n", IMG_GetError());
     }
 
-    // Set colorkey để làm trong suốt nền đen
+
+
+// Set colorkey để làm trong suốt nền đen
     SDL_SetColorKey(tempSurface, SDL_TRUE, SDL_MapRGB(tempSurface->format, 0, 0, 0));
 
-    // Tạo texture từ surface sau khi đã xử lý colorkey
+
+
+// Tạo texture từ surface sau khi đã xử lý colorkey
     enemyTankTexture = SDL_CreateTextureFromSurface(renderer, tempSurface);
     SDL_FreeSurface(tempSurface);
 
-    // Blend để hỗ trợ trong suốt
+
+
+// Blend để hỗ trợ trong suốt
     SDL_SetTextureBlendMode(enemyTankTexture, SDL_BLENDMODE_BLEND);
         rect = {x, y, TILE_SIZE, TILE_SIZE};
         dirX = 0;
@@ -98,21 +107,25 @@ void move(const vector<Wall>& walls) {
 
 bool isHidden;
 bool isIce;
-void moveTowardPlayer(int playerX, int playerY, const vector<Wall>& walls,const vector<Stone>& stones,const vector<Bush>& bushes,const vector<Ice>& ices,const vector<Water>& watered) {
+
+
+//Hàm cho xe tăng di chuyển về phía người chơi
+void moveTowardPlayer(int playerX, int playerY, const vector<Wall>& walls,const vector<Stone>& stones,const vector<Bush>& bushes,const vector<Ice>& ices,const vector<Water>& watered,const Base base) {
     if (--moveDelay > 0) return;
 
     moveDelay =50; // delay càng cao thì tank càng chậm
 
     int dx = 0, dy = 0;
 
-    // Ưu tiên hướng có khoảng cách lớn hơn
+// Ưu tiên hướng có khoảng cách lớn hơn
     if (abs(playerX - x) > abs(playerY - y)) {
+
+
         dx = (playerX > x) ? 5 : -5;
     } else {
         dy = (playerY > y) ? 5 : -5;
     }
-
-    // kiểm tra va chạm với tường
+//Kiểm tra va chạm với tường
     int newX = x + dx;
     int newY = y + dy;
     SDL_Rect newRect = { newX, newY, TILE_SIZE, TILE_SIZE };
@@ -123,6 +136,8 @@ void moveTowardPlayer(int playerX, int playerY, const vector<Wall>& walls,const 
         }
     }
     for (const auto& stone : stones) {
+
+
         if (stone.active && SDL_HasIntersection(&newRect, &stone.rect)) {
             return; // va đá, không di chuyển
         }
@@ -141,11 +156,16 @@ void moveTowardPlayer(int playerX, int playerY, const vector<Wall>& walls,const 
     dirX = dx;
     dirY = dy;
     isHidden = false;
+
+//Kiểm tra xe tăng địch đi trong bụi
 for (int i = 0; i < bushes.size(); i++) {
         if (bushes[i].active && SDL_HasIntersection(&newRect, &bushes[i].rect)) {
             isHidden=true;
         }
-        //kiem tra di chuyen tren bang
+}
+
+
+//Kiểm tra xe tăng địch di chuyển trên tảng băng
     this-> isIce=false;
     for (const auto& ice : ices) {
         if (ice.active && SDL_HasIntersection(&newRect, &ice.rect)) {
@@ -153,41 +173,51 @@ for (int i = 0; i < bushes.size(); i++) {
         }
     }
 
-    //kiem tra di chuyen duoi nuoc
+
+
+//Kiểm tra xe tăng địch đi dưới nước
     for (const auto& water : watered) {
         if (water.active && SDL_HasIntersection(&newRect, &water.rect)) {
             return;
         }
     }
-    }
-
-    if (dx < 0) dir = RIGHT;
-    else if (dx > 0) dir = LEFT;
-    else if (dy < 0) dir = DOWN;
-    else if (dy > 0) dir = UP;
+//Kiểm tra va chạm Base
+if (base.active && SDL_HasIntersection(&newRect, &base.rect)) {
+        return;
+}
+    if (dx > 0) dir = RIGHT;
+    else if (dx < 0) dir = LEFT;
+    else if (dy > 0) dir = DOWN;
+    else if (dy < 0) dir = UP;
 }
 
 
 
-
-    void shoot(SDL_Renderer* renderer) {
+//Bắn
+void shoot(SDL_Renderer* renderer) {
     if (--shootDelay > 0) return;
     shootDelay = 5;
     bullets.push_back(Bullet(x + TILE_SIZE/2 - 5, y + TILE_SIZE/2 - 5,
                              this->dirX, this->dirY,renderer));
 }
 
+
+//Đường đạn, xoá đạn
 void updateBullets() {
+
+
     for (auto &bullet : bullets) {
         bullet.move();
     }
+    //Xoá đạn
     bullets.erase(std::remove_if(bullets.begin(), bullets.end(),
                  [](Bullet &b) { return !b.active; }), bullets.end());
 }
-
+//Render
 void render(SDL_Renderer* renderer) {
 
     double angle = 0;
+//Hướng Của viên đạn
     switch (dir) {
         case UP: angle = 0; break;
         case RIGHT: angle = 90; break;
@@ -201,6 +231,7 @@ void render(SDL_Renderer* renderer) {
     //SDL_RenderCopy(renderer, textureUp, NULL, &rect);
     //SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
     //SDL_RenderFillRect(renderer, &rect);
+//Render đạn
     for (auto &bullet : bullets) {
         bullet.render(renderer);
     }

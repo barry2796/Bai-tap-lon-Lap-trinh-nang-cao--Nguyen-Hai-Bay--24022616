@@ -25,7 +25,7 @@ public:
         active = true;
 
         // Load texture
-        BulletTexture = IMG_LoadTexture(renderer, "Bullet2.png");
+        BulletTexture = IMG_LoadTexture(renderer, "resource/image/Bullet2.png");
         if (!BulletTexture) {
             std::cerr << "Failed to load bullet texture: " << IMG_GetError() << std::endl;
         }
