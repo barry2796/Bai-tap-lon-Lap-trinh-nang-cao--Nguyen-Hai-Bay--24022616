@@ -238,6 +238,10 @@ void render(SDL_Renderer* renderer) {
 }
 
 };
+
+class Boss{
+
+};
 #endif
 
 

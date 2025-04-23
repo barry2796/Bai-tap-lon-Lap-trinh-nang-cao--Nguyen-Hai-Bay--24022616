@@ -497,7 +497,7 @@ if(gameMode== TWO_PLAYER){
     for (auto& bullet : player2.bullets) {
 
 
-//Đạn kẻ địch bắn va chạm với tường
+
     for (auto& wall : walls) {
         if (wall.active && SDL_HasIntersection(&bullet.rect, &wall.rect)) {
             wall.active = false;
@@ -505,6 +505,8 @@ if(gameMode== TWO_PLAYER){
             break;
         }
     }
+}
+
 }
     for (auto& enemy : enemies) {
 
@@ -518,7 +520,7 @@ if(gameMode== TWO_PLAYER){
             }
         }
     }
-}
+
 //Đạn người chơi 1 bắn va chạm với sắt
     for (auto& bullet : player1.bullets) {
 
@@ -630,7 +632,7 @@ for (auto& enemy : enemies) {
     for (auto& bullet : enemy.bullets) {
         // Update
         if (SDL_HasIntersection(&bullet.rect, &player1.rect)) {
-            running=false;
+            renderGameOver(running);
 
             return;
         }
@@ -642,7 +644,7 @@ for (auto& enemy : enemies) {
     for (auto& bullet : enemy.bullets) {
         // Update
         if (SDL_HasIntersection(&bullet.rect, &player2.rect)) {
-            running=false;
+            renderGameOver(running);
 
             return;
         }
@@ -703,9 +705,28 @@ for (auto& bulletP : player1.bullets) {
 
             }
 }
+    if(gameMode==TWO_PLAYER){
+    //Kiểm tra đạn người chơi bắn vào base
+            for (auto& bulletP : player2.bullets) {
+                if (!bulletP.active) continue; // bỏ qua đạn đã vô hiệu
+                if (SDL_HasIntersection(&bulletP.rect, &base.rect)) {
+                            bulletP.active = false;
+                            base.active = false;
+                            renderGameOver(running);
 
-
-
+                        }
+            }
+    }
+    for (auto& enemy : enemies) {
+        for (auto& bulletE : enemy.bullets) {
+            if (!bulletE.active) continue; // bỏ qua đạn đã vô hiệu
+            if (SDL_HasIntersection(&base.rect, &bulletE.rect)) {
+                base.active = false;
+                bulletE.active = false;
+                renderGameOver(running);
+            }
+        }
+    }
 }
 
 // Thêm vào class Game (nếu chưa có)
