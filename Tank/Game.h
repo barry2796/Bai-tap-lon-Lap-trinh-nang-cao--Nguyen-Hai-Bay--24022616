@@ -9,6 +9,7 @@
 #include "Tank.h"
 #include "Bullet.h"
 #include "EnemyTank.h"
+#include "boss.h"
 
 enum GameMode {
     ONE_PLAYER,
@@ -21,20 +22,31 @@ using namespace std;
   class Game {
 public:
     SDL_Window* window;
+    SDL_Texture* heartTexture;
     Mix_Music* backgroundMusic;
     Mix_Chunk* shootSound = nullptr;
     Mix_Chunk* enemyShootSound = nullptr;
     Mix_Chunk* dieSound = nullptr;
+    Mix_Chunk* selectSound = nullptr;
+    Mix_Chunk* gameOverSound = nullptr;
+    Mix_Chunk* chooseSound = nullptr;
+    Mix_Chunk* chooseSound2 = nullptr;
+    Mix_Chunk* victorySound = nullptr;
     SDL_Renderer* renderer;
     bool running;
-
+    bool isBossLevel=false;
+    int scoreP1=0;
+    int scoreP2=0;
     int currentLevel=1;
-    const int maxLevel=20;
+    const int maxLevel=1;
     vector<Wall> walls;
     vector<Stone> stones;
     vector<Bush> bushes;
     vector<Water> water;
     vector<Ice> ice;
+    vector<wallExplosion> wallExplosions;
+    vector<tankExplosion> tankExplosions;
+    vector<bossExplosion> bossExplosions;
     PlayerTank player1;
     PlayerTank player2;
     Base base;
@@ -42,7 +54,7 @@ public:
     vector<EnemyTank> enemies;
     TTF_Font* font;
     GameMode gameMode;
-
+    Boss boss = Boss(0, 0, nullptr);
     // constructor
     Game() {
     running = true;
@@ -68,7 +80,6 @@ public:
     }
 
 
-
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED); // ve tren window, dung bo ve mac dinh, dung gpu tang toc
     if (!renderer) {
         cerr << "Renderer could not be created! SDL_Error: " << SDL_GetError() << endl;
@@ -77,9 +88,21 @@ public:
 
 
 //    enemyShootSound = Mix_LoadWAV
-    backgroundMusic = Mix_LoadMUS("Sound.mp3");
-    shootSound = Mix_LoadWAV("playerTankshootSound.wav");
+    backgroundMusic = Mix_LoadMUS("resource/sound/Sound.mp3");
+    shootSound = Mix_LoadWAV("resource/sound/tankShotSound.wav");
+    selectSound = Mix_LoadWAV("resource/sound/selectSound.wav");
+    gameOverSound = Mix_LoadWAV("resource/sound/gameOver.wav");
+    chooseSound = Mix_LoadWAV("resource/sound/chooseSound1.wav");
+    chooseSound2 = Mix_LoadWAV("resource/sound/chooseSound2.wav");
+    victorySound = Mix_LoadWAV("resource/sound/victory.wav");
+
+    if (!gameOverSound) {
+        cerr << "Failed to load shoot sound! Error: " << Mix_GetError() << endl;
+    }
     if (!shootSound) {
+        cerr << "Failed to load shoot sound! Error: " << Mix_GetError() << endl;
+    }
+    if (!selectSound) {
         cerr << "Failed to load shoot sound! Error: " << Mix_GetError() << endl;
     }
     if (!backgroundMusic) {
@@ -99,6 +122,14 @@ public:
                 cout << "Failed to load font: " << TTF_GetError() << std::endl;
             }
 
+
+    SDL_Surface* heartSurface = IMG_Load("resource/image/heart.png");
+    if (!heartSurface) {
+            cout<<"loi";
+        running=false;
+    }
+    heartTexture = SDL_CreateTextureFromSurface(renderer, heartSurface);
+    SDL_FreeSurface(heartSurface);
 
 
 
@@ -148,21 +179,36 @@ void showMenu() {
                 return;
             } else if (event.type == SDL_KEYDOWN) {
                 switch (event.key.keysym.sym) {
-                    case SDLK_UP:
+                    case SDLK_UP:{
                         selectedOption = (selectedOption - 1 + 2) % 2;
+                        if (Mix_PlayChannel(-1, selectSound, 0) == -1) {
+                            cerr << "Failed to play sound: " << Mix_GetError() << endl;
+                        }
                         break;
-                    case SDLK_DOWN:
+                    }
+                    case SDLK_DOWN:{
                         selectedOption = (selectedOption + 1) % 2;
+                        if (Mix_PlayChannel(-1, selectSound, 0) == -1) {
+                            cerr << "Failed to play sound: " << Mix_GetError() << endl;
+                        }
                         break;
+                    }
                     case SDLK_RETURN:
                     case SDLK_KP_ENTER:
                         if (selectedOption == 0) {
+                            if (Mix_PlayChannel(-1, chooseSound, 0) == -1) {
+                                cerr << "Failed to play sound: " << Mix_GetError() << endl;
+                            }
                             gameMode = ChooseMode(); // Lưu chế độ chơi
                             inMenu = false; // Thoát menu để vào game
                         } else {
+                            if (Mix_PlayChannel(-1, chooseSound, 0) == -1) {
+                                cerr << "Failed to play sound: " << Mix_GetError() << endl;
+                            }
                             running = false; // Thoát game
                             inMenu = false;
                         }
+
                         break;
                 }
             }
@@ -204,21 +250,36 @@ GameMode ChooseMode() {
                 return GameMode::ONE_PLAYER; // Hoặc có thể trả về một giá trị đặc biệt để thoát
             } else if (event.type == SDL_KEYDOWN) {
                 switch (event.key.keysym.sym) {
-                    case SDLK_UP:
+                    case SDLK_UP:{
                         selectedMode = (selectedMode - 1 + 2) % 2;
+                        if (Mix_PlayChannel(-1, selectSound, 0) == -1) {
+                            cerr << "Failed to play sound: " << Mix_GetError() << endl;
+                        }
                         break;
-                    case SDLK_DOWN:
+                    }
+                    case SDLK_DOWN:{
+                        if (Mix_PlayChannel(-1, selectSound, 0) == -1) {
+                            cerr << "Failed to play sound: " << Mix_GetError() << endl;
+                        }
                         selectedMode = (selectedMode + 1) % 2;
                         break;
+                    }
                     case SDLK_RETURN:
                     case SDLK_KP_ENTER:
                         if (selectedMode == 0) {
+                            if (Mix_PlayChannel(-1, chooseSound2, 0) == -1) {
+                            cerr << "Failed to play sound: " << Mix_GetError() << endl;
+                            }
                             cout << "Chon Mode 1 Nguoi Choi" << endl;
                             return GameMode::ONE_PLAYER;
                         } else {
+                            if (Mix_PlayChannel(-1, chooseSound2, 0) == -1) {
+                            cerr << "Failed to play sound: " << Mix_GetError() << endl;
+                            }
                             cout << "Chon Mode 2 Nguoi Choi" << endl;
                             return GameMode::TWO_PLAYER;
                         }
+
                         break;
                 }
             }
@@ -229,22 +290,65 @@ GameMode ChooseMode() {
 }
 
 //Hiện level bên phải màn hình
-    void renderLevel(){
-        SDL_Color white = {0, 0, 0};
+void renderLevel() {
+    SDL_Color black = {0, 0, 0};
 
-        string p1 = "Level: " + to_string(currentLevel);
+    // Render Level Text
+    string levelText = "Level: " + to_string(currentLevel);
+    SDL_Surface* levelSurface = TTF_RenderText_Blended(font, levelText.c_str(), black);
+    SDL_Texture* levelTexture = SDL_CreateTextureFromSurface(renderer, levelSurface);
+    SDL_Rect levelRect = {570, 130, levelSurface->w, levelSurface->h};
+    SDL_RenderCopy(renderer, levelTexture, NULL, &levelRect);
+    SDL_FreeSurface(levelSurface);
+    SDL_DestroyTexture(levelTexture);
 
-        SDL_Surface* textSurface1 = TTF_RenderText_Blended(font, p1.c_str(), white);
-        SDL_Texture* textTexture1 = SDL_CreateTextureFromSurface(renderer, textSurface1);
-        SDL_Rect dstRect1 = {570, 130, textSurface1->w, textSurface1->h}; // tuỳ chỉnh vị trí
-
-
-        SDL_RenderCopy(renderer, textTexture1, NULL, &dstRect1);
-
-        // Clean up
-        SDL_FreeSurface(textSurface1);
-        SDL_DestroyTexture(textTexture1);
+    // Render Hearts for Player 1
+    SDL_Surface* p1Surface = TTF_RenderText_Blended(font, "P1:", black);
+    SDL_Texture* p1Texture = SDL_CreateTextureFromSurface(renderer, p1Surface);
+    SDL_Rect p1Rect = {570, 170, p1Surface->w, p1Surface->h};
+    SDL_RenderCopy(renderer, p1Texture, NULL, &p1Rect);
+    SDL_FreeSurface(p1Surface);
+    SDL_DestroyTexture(p1Texture);
+    int heartWidth = 24, heartHeight = 24; // tuỳ kích thước ảnh của bạn
+    for (int i = 0; i < player1.remainingLives; ++i) {
+        SDL_Rect heartRect = {650 + i * (heartWidth + 5), 170, heartWidth, heartHeight};
+        SDL_RenderCopy(renderer, heartTexture, NULL, &heartRect);
     }
+
+    // Render Hearts for Player 2 nếu chơi 2 người
+    if (gameMode == TWO_PLAYER) {
+        SDL_Surface* p2Surface = TTF_RenderText_Blended(font, "P2:", black);
+        SDL_Texture* p2Texture = SDL_CreateTextureFromSurface(renderer, p2Surface);
+        SDL_Rect p2Rect = {570, 210, p2Surface->w, p2Surface->h};
+        SDL_RenderCopy(renderer, p2Texture, NULL, &p2Rect);
+        SDL_FreeSurface(p2Surface);
+        SDL_DestroyTexture(p2Texture);
+        for (int i = 0; i < player2.remainingLives; ++i) {
+            SDL_Rect heartRect = {650 + i * (heartWidth + 5), 210, heartWidth, heartHeight};
+            SDL_RenderCopy(renderer, heartTexture, NULL, &heartRect);
+        }
+    }
+
+    //hiện điểm người chơi 1
+    string p1ScoreText = "P1: " + to_string(scoreP1);
+    SDL_Surface* p1ScoreSurface = TTF_RenderText_Blended(font, p1ScoreText.c_str(), black);
+    SDL_Texture* p1ScoreTexture = SDL_CreateTextureFromSurface(renderer, p1ScoreSurface);
+    SDL_Rect p1ScoreRect = {570, 240, p1ScoreSurface->w, p1ScoreSurface->h};
+    SDL_RenderCopy(renderer, p1ScoreTexture, NULL, &p1ScoreRect);
+    SDL_FreeSurface(p1ScoreSurface);
+    SDL_DestroyTexture(p1ScoreTexture);
+
+    if (gameMode==TWO_PLAYER){
+            string p2ScoreText = "P2: " + to_string(scoreP2);
+    SDL_Surface* p2ScoreSurface = TTF_RenderText_Blended(font, p2ScoreText.c_str(), black);
+    SDL_Texture* p2ScoreTexture = SDL_CreateTextureFromSurface(renderer, p2ScoreSurface);
+    SDL_Rect p2ScoreRect = {570, 270, p2ScoreSurface->w, p2ScoreSurface->h};
+    SDL_RenderCopy(renderer, p2ScoreTexture, NULL, &p2ScoreRect);
+    SDL_FreeSurface(p2ScoreSurface);
+    SDL_DestroyTexture(p2ScoreTexture);
+
+    }
+}
 
 
 void renderGameOver(bool& gameRunning) {  // Truyền tham chiếu để thay đổi biến thực sự
@@ -271,21 +375,192 @@ void renderGameOver(bool& gameRunning) {  // Truyền tham chiếu để thay đ
 
     // Hiển thị
     SDL_RenderPresent(renderer);
-
+    if (Mix_PlayChannel(-1, gameOverSound, 0) == -1) {
+                            cerr << "Failed to play sound: " << Mix_GetError() << endl;
+                        }
     // Cập nhật trạng thái game
     SDL_Delay(2000);
-    gameRunning = false;
+
+    restartGame();
 }
+
+void renderVictory(){
+    //Tạo nền mờ (màu đen với độ trong suốt)
+            SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+            SDL_SetRenderDrawColor(renderer, 0, 0, 0, 200); // Màu đen mờ
+            SDL_Rect overlay = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
+            SDL_RenderFillRect(renderer, &overlay);
+
+            //Tạo chữ VICTORY lớn
+            TTF_Font* bigFont = TTF_OpenFont("PressStart2P.ttf", 72);
+            SDL_Color gold = {255, 215, 0, 255}; // Màu vàng
+
+            SDL_Surface* victorySurface = TTF_RenderText_Blended(bigFont, "VICTORY!", gold);
+            SDL_Texture* victoryTexture = SDL_CreateTextureFromSurface(renderer, victorySurface);
+
+            SDL_Rect victoryRect = {
+                SCREEN_WIDTH/2 - victorySurface->w/2,
+                SCREEN_HEIGHT/2 - victorySurface->h - 30,
+                victorySurface->w,
+                victorySurface->h
+            };
+            SDL_RenderCopy(renderer, victoryTexture, NULL, &victoryRect);
+
+            //Tạo dòng mô tả nhỏ hơn
+            TTF_Font* smallFont = TTF_OpenFont("PressStart2P.ttf", 24);
+            SDL_Color white = {255, 255, 255, 255};
+
+            SDL_Surface* descSurface = TTF_RenderText_Blended(smallFont, "You have defeated the final boss!", white);
+            SDL_Texture* descTexture = SDL_CreateTextureFromSurface(renderer, descSurface);
+
+            SDL_Rect descRect = {
+                SCREEN_WIDTH/2 - descSurface->w/2,
+                SCREEN_HEIGHT/2 + 30,
+                descSurface->w,
+                descSurface->h
+            };
+            SDL_RenderCopy(renderer, descTexture, NULL, &descRect);
+
+            //Hiển thị hướng dẫn tiếp tục
+            SDL_Surface* continueSurface = TTF_RenderText_Blended(smallFont, "Press ENTER to continue", white);
+            SDL_Texture* continueTexture = SDL_CreateTextureFromSurface(renderer, continueSurface);
+
+            SDL_Rect continueRect = {
+                SCREEN_WIDTH/2 - continueSurface->w/2,
+                SCREEN_HEIGHT - 100,
+                continueSurface->w,
+                continueSurface->h
+            };
+            SDL_RenderCopy(renderer, continueTexture, NULL, &continueRect);
+
+            //Cập nhật màn hình
+            SDL_RenderPresent(renderer);
+
+            //Phát âm thanh chiến thắng
+            if (victorySound) {
+                Mix_PlayChannel(-1, victorySound, 0);
+            }
+
+            //Chờ người chơi nhấn ENTER
+            bool waiting = true;
+            SDL_Event e;
+            while (waiting && running) {
+                while (SDL_PollEvent(&e)) {
+                    if (e.type == SDL_QUIT) {
+                        running = false;
+                        waiting = false;
+                    } else if (e.type == SDL_KEYDOWN) {
+                        if (e.key.keysym.sym == SDLK_RETURN || e.key.keysym.sym == SDLK_KP_ENTER) {
+                            waiting = false;
+                        }
+                    }
+                }
+                SDL_Delay(16);
+            }
+
+            //Giải phóng bộ nhớ
+            SDL_FreeSurface(victorySurface);
+            SDL_DestroyTexture(victoryTexture);
+            SDL_FreeSurface(descSurface);
+            SDL_DestroyTexture(descTexture);
+            SDL_FreeSurface(continueSurface);
+            SDL_DestroyTexture(continueTexture);
+            TTF_CloseFont(bigFont);
+            TTF_CloseFont(smallFont);
+
+            running = false; // Thoát game
+        }
+
+void restartGame() {
+    bool inRestart = true;
+    int selectedOption = 0; // 0 = Continue, 1 = Exit
+    SDL_Event event;
+    SDL_Color white = {255, 255, 255};
+    SDL_Color yellow = {255, 255, 0};
+
+    while (inRestart) {
+        // Vẽ menu nền
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+        SDL_RenderClear(renderer);
+
+        string options[2] = {"Continue", "Exit"};
+        for (int i = 0; i < 2; ++i) {
+            SDL_Color color = (i == selectedOption) ? yellow : white;
+            SDL_Surface* surface = TTF_RenderText_Blended(font, options[i].c_str(), color);
+            SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+            SDL_Rect dstRect = { SCREEN_WIDTH / 2 - surface->w / 2, 200 + i * 50, surface->w, surface->h };
+            SDL_RenderCopy(renderer, texture, NULL, &dstRect);
+            SDL_FreeSurface(surface);
+            SDL_DestroyTexture(texture);
+        }
+
+        SDL_RenderPresent(renderer);
+
+        // Xử lý phím
+        while (SDL_PollEvent(&event)) {
+            if (event.type == SDL_QUIT) {
+                running = false;
+                inRestart = false;
+                return;
+            } else if (event.type == SDL_KEYDOWN) {
+                switch (event.key.keysym.sym) {
+                    case SDLK_UP:
+                        selectedOption = (selectedOption - 1 + 2) % 2;
+                        if (Mix_PlayChannel(-1, selectSound, 0) == -1) {
+                            cerr << "Failed to play sound: " << Mix_GetError() << endl;
+                        }
+                        break;
+                    case SDLK_DOWN:
+                        selectedOption = (selectedOption + 1) % 2;
+                        if (Mix_PlayChannel(-1, selectSound, 0) == -1) {
+                            cerr << "Failed to play sound: " << Mix_GetError() << endl;
+                        }
+                        break;
+                    case SDLK_RETURN:
+                    case SDLK_KP_ENTER:
+                        if (selectedOption == 0) {
+                            if (Mix_PlayChannel(-1, chooseSound2, 0) == -1) {
+                            cerr << "Failed to play sound: " << Mix_GetError() << endl;
+                            }
+                            // Reset game
+                            currentLevel = 1;
+                            isBossLevel=false;
+                            player1 = PlayerTank(9 * TILE_SIZE, (MAP_HEIGHT - 2) * TILE_SIZE, renderer, "resource/image/playerOne.png");
+                            player1.remainingLives = 3;
+                            player1.bullets.clear();
+
+                            if (gameMode == TWO_PLAYER) {
+                                player2 = PlayerTank(5 * TILE_SIZE, (MAP_HEIGHT - 2) * TILE_SIZE, renderer, "resource/image/playerTwo.png");
+                                player2.remainingLives = 3;
+                                player2.bullets.clear();
+                            }
+
+                            base.active = true;
+                            generateWalls();
+                            spawnEnemies();
+                            inRestart = false;
+                            running = true;
+                        } else {
+                            if (Mix_PlayChannel(-1, chooseSound2, 0) == -1) {
+                            cerr << "Failed to play sound: " << Mix_GetError() << endl;
+                            }
+                            running = false;
+                            inRestart = false;
+                        }
+                        break;
+                }
+            }
+        }
+
+        SDL_Delay(100);
+    }
+}
+
 //Hàm render các đối tượng
     void render() {
-
-
-
     //Nền đang là nên màu xám
     SDL_SetRenderDrawColor(renderer, 128, 128, 128, 255); // boundaries
     SDL_RenderClear(renderer); // delete color
-
-
     // Vẽ background màu đen trên nền màu xám
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     for (int i = 1; i < MAP_HEIGHT - 1; i++) {
@@ -294,27 +569,18 @@ void renderGameOver(bool& gameRunning) {  // Truyền tham chiếu để thay đ
             SDL_RenderFillRect(renderer, &tile);
         }
     }
-
-
     for (int i = 0; i < int(walls.size()); i++) {
-
-
         walls[i].render(renderer);
     }
     for (int i = 0; i < int(stones.size()); i++) {
         stones[i].render(renderer);
     }
-
-
     for (int i = 0; i < int(water.size()); i++) {
-
-
         water[i].render(renderer);
     }
     for (int i = 0; i < int(ice.size()); i++) {
         ice[i].render(renderer);
     }
-
     base.render(renderer);
     player1.render(renderer);
 
@@ -322,14 +588,38 @@ void renderGameOver(bool& gameRunning) {  // Truyền tham chiếu để thay đ
           player2.render(renderer);
     }
 
-
     for (auto& enemy : enemies) {
-
-
         enemy.render(renderer);
     }
     for (int i = 0; i < int(bushes.size()); i++) {
         bushes[i].render(renderer);
+    }
+    for (auto it = wallExplosions.begin(); it != wallExplosions.end();) {
+        if (it->isFinished()) {
+            it = wallExplosions.erase(it);
+        } else {
+            it->render(renderer);
+            ++it;
+        }
+    }
+    for (auto it = tankExplosions.begin(); it != tankExplosions.end();) {
+        if (it->isFinished()) {
+            it = tankExplosions.erase(it);
+        } else {
+            it->render(renderer);
+            ++it;
+        }
+    }
+    for (auto it = bossExplosions.begin(); it != bossExplosions.end();) {
+        if (it->isFinished()) {
+            it = bossExplosions.erase(it);
+        } else {
+            it->render(renderer);
+            ++it;
+        }
+    }
+    if(isBossLevel){
+      boss.render(renderer);
     }
 
       renderLevel();
@@ -339,8 +629,6 @@ void renderGameOver(bool& gameRunning) {  // Truyền tham chiếu để thay đ
 
 
 }
-
-
 //Chạy code
     void run() {
     showMenu(); // Gọi menu trước khi chạy game
@@ -351,7 +639,6 @@ void renderGameOver(bool& gameRunning) {  // Truyền tham chiếu để thay đ
         SDL_Delay(16);
     }
 }
-
 //Hàm tạo map
     void generateWalls() {
     walls.clear();
@@ -395,6 +682,42 @@ void renderGameOver(bool& gameRunning) {  // Truyền tham chiếu để thay đ
     }
 }
 
+void generateBossLevel() {
+    walls.clear();
+    stones.clear();
+    bushes.clear();
+    water.clear();
+    ice.clear();
+
+    string filename = "resource/level/bossLevel.txt";
+    ifstream file(filename);
+    if (!file) {
+        cerr << "Cannot open boss level file: " << filename << endl;
+        running = false;
+        return;
+    }
+
+    char a[28][26];
+    for (int i = 0; i < 28; i++) {
+        for (int j = 0; j < 26; j++) {
+            file >> a[i][j];
+        }
+    }
+
+    for (int i = 0; i < 28; i++) {
+        for (int j = 0; j < 26; j++) {
+            int x = (j + 2) * WALL_TILE_SIZE;
+            int y = (i + 1) * WALL_TILE_SIZE;
+            switch (a[i][j]) {
+                case '#': walls.emplace_back(x, y, renderer); break;
+                case '@': stones.emplace_back(x, y, renderer); break;
+                case '%': bushes.emplace_back(x, y, renderer); break;
+                case '~': water.emplace_back(x, y, renderer); break;
+                case '-': ice.emplace_back(x, y, renderer); break;
+            }
+        }
+    }
+}
 
 //xử lí sự kiện bàn phím
 void handleEvents() {
@@ -415,17 +738,18 @@ void handleEvents() {
 
                 case SDLK_CAPSLOCK:
                     if(gameMode== TWO_PLAYER){
-                    player2.shoot(renderer);
+                        player2.shoot(renderer);
+                        if (Mix_PlayChannel(-1, shootSound, 0) == -1) {
+                            cerr << "Failed to play sound: " << Mix_GetError() << endl;
+                        }
                     }
                     break;
-
                 case SDLK_ESCAPE:
                     running = false;
                     break;
             }
         }
     }
-
     // Xử lý giữ phím để di chuyển mượt hơn
     const Uint8* keystates = SDL_GetKeyboardState(NULL);
 
@@ -458,8 +782,99 @@ void handleEvents() {
 
 //UPDATE
 void update() {
+    if(isBossLevel){
+        boss.update();
+
+        // Kiểm tra va chạm đạn player với boss
+        for (auto& bullet : player1.bullets) {
+            if (bullet.active && SDL_HasIntersection(&bullet.rect, &boss.rect)) {
+                boss.remainingLives--;
+                bullet.active = false;
+                if (boss.remainingLives <= 0) {
+                    bossExplosions.emplace_back(renderer, boss.rect.x, boss.rect.y);
+                    Mix_PlayChannel(-1, bossExplosions.back().explosionSound, 0);
+                    boss.isActive = false;
+                    scoreP1 += 500; // Thưởng điểm khi đánh bại boss
+                }
+            }
+        }
+
+        if(gameMode == TWO_PLAYER) {
+            for (auto& bullet : player2.bullets) {
+                if (bullet.active && SDL_HasIntersection(&bullet.rect, &boss.rect)) {
+                    boss.remainingLives--;
+                    bullet.active = false;
+                    if (boss.remainingLives <= 0) {
+                        bossExplosions.emplace_back(renderer, boss.rect.x, boss.rect.y);
+                        Mix_PlayChannel(-1, bossExplosions.back().explosionSound, 0);
+                        boss.isActive = false;
+                        scoreP2 += 500; // Thưởng điểm khi đánh bại boss
+                    }
+                }
+            }
+        }
+
+        // Kiểm tra va chạm đạn boss với player
+        for (auto& bullet : boss.bullets) {
+            if (bullet->active && SDL_HasIntersection(&bullet->rect, &player1.rect)) {
+                if(player1.remainingLives > 1) {
+                    player1.remainingLives--;
+                    bullet->active = false;
+                } else {
+                    renderGameOver(running);
+                }
+            }
+
+            if(gameMode == TWO_PLAYER && bullet->active && SDL_HasIntersection(&bullet->rect, &player2.rect)) {
+                if(player2.remainingLives > 1) {
+                    player2.remainingLives--;
+                    bullet->active = false;
+                } else {
+                    renderGameOver(running);
+                }
+            }
+
+            // Kiểm tra va chạm với tường
+            for (auto& wall : walls) {
+                if (wall.active && SDL_HasIntersection(&bullet->rect, &wall.rect)) {
+                    wall.active = false;
+                    bullet->active = false;
+                    wallExplosions.emplace_back(renderer, wall.rect.x, wall.rect.y);
+                    Mix_PlayChannel(-1, wallExplosions.back().explosionSound, 0);
+                    break;
+                }
+            }
+
+            // Kiểm tra va chạm với đá
+            for (auto& stone : stones) {
+                if (stone.active && SDL_HasIntersection(&bullet->rect, &stone.rect)) {
+                    bullet->active = false;
+                    break;
+                }
+            }
+
+            // Kiểm tra va chạm với base
+            if (bullet->active && SDL_HasIntersection(&bullet->rect, &base.rect)) {
+                bullet->active = false;
+                base.active = false;
+                renderGameOver(running);
+            }
+        }
+
+        // Xóa đạn không active của boss
+        boss.bullets.erase(std::remove_if(boss.bullets.begin(), boss.bullets.end(),
+            [](const std::unique_ptr<Bullet>& b) { return !b->active; }), boss.bullets.end());
+
+        // Kiểm tra nếu boss bị tiêu diệt
+        if (!boss.isActive) {
+                bossExplosions.emplace_back(renderer, boss.rect.x, boss.rect.y);
+                renderVictory();
+        }
+    }
     player1.updateBullets();
-    player2.updateBullets();
+    if(gameMode==TWO_PLAYER){
+        player2.updateBullets();
+    }
 
     for (auto& enemy : enemies) {
 
@@ -472,40 +887,40 @@ void update() {
             enemy.shoot(renderer);
         }
     }
-
-
-
-
-
-
 //*************************************************************************************************************************************
 //Đạn người chơi 1 bắn va chạm với tường
     for (auto& bullet : player1.bullets) {
-
-
-
     for (auto& wall : walls) {
         if (wall.active && SDL_HasIntersection(&bullet.rect, &wall.rect)) {
             wall.active = false;
             bullet.active = false;
+            // Hiệu ứng nổ tại vị trí tường
+            wallExplosions.emplace_back(renderer, wall.rect.x, wall.rect.y);
+
+            // Phát âm thanh nếu cần
+            Mix_PlayChannel(-1, wallExplosions.back().explosionSound, 0);
+
             break;
         }
     }
 }
 //Đạn người chơi 2 bắn va chạm với tường
 if(gameMode== TWO_PLAYER){
-    for (auto& bullet : player2.bullets) {
+        for (auto& bullet : player2.bullets) {
+            for (auto& wall : walls) {
+                if (wall.active && SDL_HasIntersection(&bullet.rect, &wall.rect)) {
+                    wall.active = false;
+                    bullet.active = false;
+                    // Hiệu ứng nổ tại vị trí tường
+                    wallExplosions.emplace_back(renderer, wall.rect.x, wall.rect.y);
 
+                    // Phát âm thanh nếu cần
+                    Mix_PlayChannel(-1, wallExplosions.back().explosionSound, 0);
 
-
-    for (auto& wall : walls) {
-        if (wall.active && SDL_HasIntersection(&bullet.rect, &wall.rect)) {
-            wall.active = false;
-            bullet.active = false;
-            break;
+                    break;
+                }
         }
     }
-}
 
 }
     for (auto& enemy : enemies) {
@@ -515,12 +930,17 @@ if(gameMode== TWO_PLAYER){
                 if (wall.active && SDL_HasIntersection(&bullet.rect, &wall.rect)) {
                     wall.active = false;
                     bullet.active = false;
+                    // Hiệu ứng nổ tại vị trí tường
+                    wallExplosions.emplace_back(renderer, wall.rect.x, wall.rect.y);
+
+                    // Phát âm thanh nếu cần
+                    Mix_PlayChannel(-1, wallExplosions.back().explosionSound, 0);
+
                     break;
-                }
+                                }
             }
         }
     }
-
 //Đạn người chơi 1 bắn va chạm với sắt
     for (auto& bullet : player1.bullets) {
 
@@ -559,14 +979,15 @@ if(gameMode== TWO_PLAYER){
         }
     }
 //**************************************************************************************************************************************
-
-
-//**************************************************************************************************************************************
 //Người chơi bắn trúng kẻ địch
 
 for (auto& bullet : player1.bullets) {
     for (auto& enemy : enemies) {
         if (enemy.active && SDL_HasIntersection(&bullet.rect, &enemy.rect)) {
+            //hiệu ứng nổ xe tăng
+            tankExplosions.emplace_back(renderer, enemy.rect.x, enemy.rect.y);
+            Mix_PlayChannel(-1, tankExplosions.back().explosionSound, 0);
+            scoreP1+=100;
             enemy.active = false;
             bullet.active = false;
         }
@@ -578,16 +999,16 @@ if(gameMode== TWO_PLAYER){
 for (auto& bullet : player2.bullets) {
     for (auto& enemy : enemies) {
         if (enemy.active && SDL_HasIntersection(&bullet.rect, &enemy.rect)) {
+            //hiệu ứng nổ xe tăng
+            tankExplosions.emplace_back(renderer, enemy.rect.x, enemy.rect.y);
+            Mix_PlayChannel(-1, tankExplosions.back().explosionSound, 0);
+            scoreP2+=100;
             enemy.active = false;
             bullet.active = false;
         }
     }
 }
 }
-//**************************************************************************************************************************************
-
-
-
 
 //**************************************************************************************************************************************
 //Xoá các xe tăng địch đã bị đánh dấu là chết
@@ -599,75 +1020,77 @@ enemies.erase(std::remove_if(enemies.begin(), enemies.end(),
 if (enemies.empty()) {
         SDL_Delay(50);
     if (currentLevel < maxLevel) {
-        currentLevel++;
-        cout << "Level up! Now loading level\n " << currentLevel << endl;
-        generateWalls();
-        spawnEnemies();
-        // Reset lại vị trí người chơi
-        player1 = PlayerTank(9 * TILE_SIZE, (MAP_HEIGHT - 2) * TILE_SIZE, renderer, "resource/image/playerOne.png");
+    currentLevel++;
+    cout << "Level up! Now loading level\n " << currentLevel << endl;
+    generateWalls();
+    spawnEnemies();
+    player1 = PlayerTank(9 * TILE_SIZE, (MAP_HEIGHT - 2) * TILE_SIZE, renderer, "resource/image/playerOne.png");
+    player1.bullets.clear();
+    if(gameMode==TWO_PLAYER){
         player2 = PlayerTank(5 * TILE_SIZE, (MAP_HEIGHT - 2) * TILE_SIZE, renderer, "resource/image/playerTwo.png");
-        // clear đạn
-        player1.bullets.clear();
         player2.bullets.clear();
-        base.active=true;
-    } else {
-        cout << "WIN GAME! YOU BEAT ALL LEVELS!" << endl;
-        running = false;
     }
-}
+    base.active = true;
+    }
+    else if (!isBossLevel) {
+        // Lần đầu đến boss
+        isBossLevel = true;
+        cout << "Entering BOSS LEVEL!\n";
+        generateBossLevel(); // <-- Tạo hàm riêng để load map boss
+        boss = Boss(TILE_SIZE * 5, TILE_SIZE *5, renderer);
+        player1 = PlayerTank(9 * TILE_SIZE, (MAP_HEIGHT - 2) * TILE_SIZE, renderer, "resource/image/playerOne.png");
+        player1.bullets.clear();
+        if(gameMode==TWO_PLAYER){
+            player2 = PlayerTank(5 * TILE_SIZE, (MAP_HEIGHT - 2) * TILE_SIZE, renderer, "resource/image/playerTwo.png");
+            player2.bullets.clear();
+        }
+        base.active = true;
+    }
+   /* else {
+        cout << "WIN GAME! YOU BEAT THE BOSS!" << endl;
+        running = false;
+    }*/
 
-//**************************************************************************************************************************************
-
-
-
-
-
-
-
-
-//**************************************************************************************************************************************
-
+}//**************************************************************************************************************************************
 //Dan ban vao nguoi choi
 for (auto& enemy : enemies) {
     for (auto& bullet : enemy.bullets) {
         // Update
         if (SDL_HasIntersection(&bullet.rect, &player1.rect)) {
-            renderGameOver(running);
+            if(player1.remainingLives>1){
+                    player1.remainingLives--;
+                    bullet.active=false;
+            }else{
+            renderGameOver(running);}
 
             return;
         }
     }
 }
-
-
-for (auto& enemy : enemies) {
-    for (auto& bullet : enemy.bullets) {
-        // Update
-        if (SDL_HasIntersection(&bullet.rect, &player2.rect)) {
-            renderGameOver(running);
-
-            return;
+if(gameMode==TWO_PLAYER){
+    for (auto& enemy : enemies) {
+        for (auto& bullet : enemy.bullets) {
+            // Update
+            if (SDL_HasIntersection(&bullet.rect, &player2.rect)) {
+                if(player2.remainingLives>1){
+                    player2.remainingLives--;
+                    bullet.active=false;
+            }else{
+            renderGameOver(running);}
+                return;
+            }
         }
     }
 }
-
-//**************************************************************************************************************************************
-
-
-
-
-
-
-
-
-
 //**************************************************************************************************************************************
 //Đạn người chơi 1 và kẻ địch va chạm nhau
 for (auto& bulletP : player1.bullets) {
     if (!bulletP.active) continue; // bỏ qua đạn đã vô hiệu
+
+    // Kiểm tra với đạn enemy thường
     for (auto& enemy : enemies) {
         for (auto& bulletE : enemy.bullets) {
-            if (!bulletE.active) continue; // bỏ qua đạn đã vô hiệu
+            if (!bulletE.active) continue;
             if (SDL_HasIntersection(&bulletP.rect, &bulletE.rect)) {
                 bulletP.active = false;
                 bulletE.active = false;
@@ -678,54 +1101,32 @@ for (auto& bulletP : player1.bullets) {
 
 //Đạn người chơi 2 và kẻ địch va chạm nhau
 if(gameMode== TWO_PLAYER){
-for (auto& bulletP : player2.bullets) {
+    for (auto& bulletP : player2.bullets) {
 
 
-    if (!bulletP.active) continue; // bỏ qua đạn đã vô hiệu
-    for (auto& enemy : enemies) {
-        for (auto& bulletE : enemy.bullets) {
-            if (!bulletE.active) continue; // bỏ qua đạn đã vô hiệu
-            if (SDL_HasIntersection(&bulletP.rect, &bulletE.rect)) {
-                bulletP.active = false;
-                bulletE.active = false;
+        if (!bulletP.active) continue; // bỏ qua đạn đã vô hiệu
+        for (auto& enemy : enemies) {
+            for (auto& bulletE : enemy.bullets) {
+                if (!bulletE.active) continue; // bỏ qua đạn đã vô hiệu
+                if (SDL_HasIntersection(&bulletP.rect, &bulletE.rect)) {
+                    bulletP.active = false;
+                    bulletE.active = false;
+                }
             }
         }
     }
-}
 }
 //**************************************************************************************************************************************
 
 //Kiểm tra đạn người chơi bắn vào base
-for (auto& bulletP : player1.bullets) {
-    if (!bulletP.active) continue; // bỏ qua đạn đã vô hiệu
-    if (SDL_HasIntersection(&bulletP.rect, &base.rect)) {
-                bulletP.active = false;
-                base.active = false;
-                renderGameOver(running);
+    for (auto& bulletP : player1.bullets) {
+        if (!bulletP.active) continue; // bỏ qua đạn đã vô hiệu
+        if (SDL_HasIntersection(&bulletP.rect, &base.rect)) {
+                    bulletP.active = false;
+                    base.active = false;
+                    renderGameOver(running);
 
-            }
-}
-    if(gameMode==TWO_PLAYER){
-    //Kiểm tra đạn người chơi bắn vào base
-            for (auto& bulletP : player2.bullets) {
-                if (!bulletP.active) continue; // bỏ qua đạn đã vô hiệu
-                if (SDL_HasIntersection(&bulletP.rect, &base.rect)) {
-                            bulletP.active = false;
-                            base.active = false;
-                            renderGameOver(running);
-
-                        }
-            }
-    }
-    for (auto& enemy : enemies) {
-        for (auto& bulletE : enemy.bullets) {
-            if (!bulletE.active) continue; // bỏ qua đạn đã vô hiệu
-            if (SDL_HasIntersection(&base.rect, &bulletE.rect)) {
-                base.active = false;
-                bulletE.active = false;
-                renderGameOver(running);
-            }
-        }
+                }
     }
 }
 
@@ -817,5 +1218,4 @@ void spawnEnemies() {
 }
 
 };
-
 

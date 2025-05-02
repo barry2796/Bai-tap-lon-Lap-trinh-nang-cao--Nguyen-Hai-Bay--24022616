@@ -21,7 +21,7 @@ public:
 
 //Constructor
     EnemyTank(int startX, int startY,SDL_Renderer* renderer) {
-        moveDelay = 15; // Delay for movement
+        moveDelay = 100; // Delay for movement
         shootDelay = 5; // Delay for shooting
         x = startX;
         y = startY;
@@ -239,9 +239,6 @@ void render(SDL_Renderer* renderer) {
 
 };
 
-class Boss{
-
-};
 #endif
 
 

@@ -1,7 +1,7 @@
 #ifndef WALL_H
 #define WALL_H
 #include "Const.h"
-const int WALL_TILE_SIZE = 20;
+
 using namespace std;
 
 //Về cơ bản, các class trong Wall.h là tương đương nhau. Sự khác nhau chỉ rõ ràng trong logic game trong Game.h
@@ -165,5 +165,6 @@ public:
         SDL_FreeSurface(surface);
         return tex;
     }
+
 };
 #endif WALL_H

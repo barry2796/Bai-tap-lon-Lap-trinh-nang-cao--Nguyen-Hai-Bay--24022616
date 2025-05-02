@@ -11,7 +11,7 @@
 	<ctime>
 	<cstdlib>
 
-1744994430 d:\tap tanh code game\bai tap lon lap trinh nang cao- nguyen hai bay- 24022616\bai-tap-lon-lap-trinh-nang-cao--nguyen-hai-bay--24022616\tank\tank.h
+1746070647 d:\tap tanh code game\bai tap lon lap trinh nang cao- nguyen hai bay- 24022616\bai-tap-lon-lap-trinh-nang-cao--nguyen-hai-bay--24022616\tank\tank.h
 	"Const.h"
 	<SDL.h>
 	<SDL_image.h>
@@ -22,7 +22,7 @@
 
 1742044441 d:\tap tanh code game\bai tap lon lap trinh nang cao- nguyen hai bay- 24022616\bai-tap-lon-lap-trinh-nang-cao--nguyen-hai-bay--24022616\tank\map.h
 
-1745284204 d:\tap tanh code game\bai tap lon lap trinh nang cao- nguyen hai bay- 24022616\bai-tap-lon-lap-trinh-nang-cao--nguyen-hai-bay--24022616\tank\game.h
+1746193313 d:\tap tanh code game\bai tap lon lap trinh nang cao- nguyen hai bay- 24022616\bai-tap-lon-lap-trinh-nang-cao--nguyen-hai-bay--24022616\tank\game.h
 	<iostream>
 	<SDL.h>
 	<vector>
@@ -34,24 +34,38 @@
 	"Tank.h"
 	"Bullet.h"
 	"EnemyTank.h"
+	"boss.h"
 
-1745075120 d:\tap tanh code game\bai tap lon lap trinh nang cao- nguyen hai bay- 24022616\bai-tap-lon-lap-trinh-nang-cao--nguyen-hai-bay--24022616\tank\wall.h
+1746067474 d:\tap tanh code game\bai tap lon lap trinh nang cao- nguyen hai bay- 24022616\bai-tap-lon-lap-trinh-nang-cao--nguyen-hai-bay--24022616\tank\wall.h
 	"Const.h"
 
-1744420769 d:\tap tanh code game\bai tap lon lap trinh nang cao- nguyen hai bay- 24022616\bai-tap-lon-lap-trinh-nang-cao--nguyen-hai-bay--24022616\tank\const.h
+1746067474 d:\tap tanh code game\bai tap lon lap trinh nang cao- nguyen hai bay- 24022616\bai-tap-lon-lap-trinh-nang-cao--nguyen-hai-bay--24022616\tank\const.h
 	<iostream>
 
-1744787278 d:\tap tanh code game\bai tap lon lap trinh nang cao- nguyen hai bay- 24022616\bai-tap-lon-lap-trinh-nang-cao--nguyen-hai-bay--24022616\tank\bullet.h
+1746193840 d:\tap tanh code game\bai tap lon lap trinh nang cao- nguyen hai bay- 24022616\bai-tap-lon-lap-trinh-nang-cao--nguyen-hai-bay--24022616\tank\bullet.h
 	<SDL.h>
 	<SDL_image.h>
+	<SDL_mixer.h>
 	<iostream>
 	"Const.h"
 
-1745320661 d:\tap tanh code game\bai tap lon lap trinh nang cao- nguyen hai bay- 24022616\bai-tap-lon-lap-trinh-nang-cao--nguyen-hai-bay--24022616\tank\enemytank.h
+1746151750 d:\tap tanh code game\bai tap lon lap trinh nang cao- nguyen hai bay- 24022616\bai-tap-lon-lap-trinh-nang-cao--nguyen-hai-bay--24022616\tank\enemytank.h
 	<iostream>
 	<SDL.h>
 	<SDL_image.h>
 	<vector>
 	<algorithm>
 	"const.h"
+
+1746193826 d:\tap tanh code game\bai tap lon lap trinh nang cao- nguyen hai bay- 24022616\bai-tap-lon-lap-trinh-nang-cao--nguyen-hai-bay--24022616\tank\boss.h
+	"Const.h"
+	<SDL.h>
+	<SDL_image.h>
+	<vector>
+	"Wall.h"
+	"Bullet.h"
+	<algorithm>
+	<cstdlib>
+	<ctime>
+	<memory>
 

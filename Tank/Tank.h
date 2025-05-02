@@ -16,6 +16,9 @@
 using namespace std;
 class PlayerTank {
 public:
+    int remainingLives=3;
+
+    bool isActive=true;
     int x, y;
 
     int dirX, dirY;
@@ -34,7 +37,7 @@ public:
 
     Uint32 lastShootTime = 0;     // thời điểm bắn cuối
 
-    static const Uint32 shootCooldown = 1500;
+    static const Uint32 shootCooldown = 500;
 
 
 
@@ -179,21 +182,22 @@ void updateBullets() {
 
 
 void render(SDL_Renderer* renderer) {
+   if(isActive){
 
+        double angle = 0;
+        switch (dir) {
+            case UP: angle = 0; break;
+            case RIGHT: angle = 90; break;
+            case DOWN: angle = 180; break;
+            case LEFT: angle = 270; break;
+        }
 
-    double angle = 0;
-    switch (dir) {
-        case UP: angle = 0; break;
-        case RIGHT: angle = 90; break;
-        case DOWN: angle = 180; break;
-        case LEFT: angle = 270; break;
-    }
+        SDL_RenderCopyEx(renderer, textureUp, nullptr, &rect, angle, nullptr, SDL_FLIP_NONE);
 
-    SDL_RenderCopyEx(renderer, textureUp, nullptr, &rect, angle, nullptr, SDL_FLIP_NONE);
-
-    for (auto& bullet : bullets) {
-        bullet.render(renderer);
-    }
+        for (auto& bullet : bullets) {
+            bullet.render(renderer);
+        }
+   }
 }
 
 
