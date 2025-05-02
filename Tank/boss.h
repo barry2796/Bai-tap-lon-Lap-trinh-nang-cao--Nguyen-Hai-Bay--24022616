@@ -83,22 +83,38 @@ public:
             createSmallBullet(rect.x + rect.w, cy + offset, 1, 0);
 
             // Đạn to – bắn theo hướng nòng quay
-            int bigBulletX = cx, bigBulletY = cy;
-            int bigDx = 0, bigDy = -1;
+    int bigBulletX = 0, bigBulletY = 0;
+    int bigDx = 0, bigDy = 0;
+    int distance = 40; // khoảng cách đạn xích ra khỏi boss
 
-            // Hướng nòng quay theo thời gian
-            switch (dir) {
-                case 0: bigDx = 0;  bigDy = -1; break; // UP
-                case 1: bigDx = 1;  bigDy = 0;  break; // RIGHT
-                case 2: bigDx = 0;  bigDy = 1;  break; // DOWN
-                case 3: bigDx = -1; bigDy = 0;  break; // LEFT
-            }
+    switch (dir) {
+        case UP:
+            bigDx = 0; bigDy = -1;
+            bigBulletX = cx;
+            bigBulletY = rect.y - distance;
+            break;
+        case RIGHT:
+            bigDx = 1; bigDy = 0;
+            bigBulletX = rect.x + rect.w + distance;
+            bigBulletY = cy;
+            break;
+        case DOWN:
+            bigDx = 0; bigDy = 1;
+            bigBulletX = cx;
+            bigBulletY = rect.y + rect.h + distance;
+            break;
+        case LEFT:
+            bigDx = -1; bigDy = 0;
+            bigBulletX = rect.x - distance;
+            bigBulletY = cy;
+            break;
+    }
 
-            bigBullets.emplace_back(std::make_unique<BigBullet>(bigBulletX, bigBulletY, bigDx, bigDy, renderer));
+    bigBullets.emplace_back(std::make_unique<BigBullet>(bigBulletX, bigBulletY, bigDx, bigDy, renderer));
 
-            // Quay nòng theo thời gian (vòng tròn)
-            dir = static_cast<Direction>((dir + 1) % 4);
-        }
+    // Quay nòng theo thời gian (vòng tròn)
+    dir = static_cast<Direction>((dir + 1) % 4);
+}
 
 
     void update() {
