@@ -1,6 +1,9 @@
 #ifndef CONST_H
 #define CONST_H
-
+#define MAP_LEFT_BOUND (TILE_SIZE)
+#define MAP_TOP_BOUND (TILE_SIZE)
+#define MAP_RIGHT_BOUND ((MAP_WIDTH - 6) * TILE_SIZE)
+#define MAP_BOTTOM_BOUND ((MAP_HEIGHT - 1) * TILE_SIZE)
 #include <iostream>
 
 const int SCREEN_WIDTH = 800;

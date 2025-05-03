@@ -46,10 +46,11 @@ public:
         rect.x = x;
         rect.y = y;
 
-        if (x < TILE_SIZE || x > SCREEN_WIDTH - TILE_SIZE ||
-            y < TILE_SIZE || y > SCREEN_HEIGHT - TILE_SIZE) {
-            active = false;
-        }
+        if (x < MAP_LEFT_BOUND || x + BULLET_SIZE > MAP_RIGHT_BOUND ||
+    y < MAP_TOP_BOUND || y + BULLET_SIZE > MAP_BOTTOM_BOUND) {
+    active = false;
+}
+
     }
 
     void render(SDL_Renderer* renderer) const {
@@ -112,10 +113,11 @@ public:
         rect.y = y;
 
         // Biến mất khi ra khỏi màn hình
-        if (x < TILE_SIZE || x > SCREEN_WIDTH - TILE_SIZE ||
-            y < TILE_SIZE || y > SCREEN_HEIGHT - TILE_SIZE) {
-            active = false;
-        }
+        if (x < MAP_LEFT_BOUND || x + size > MAP_RIGHT_BOUND ||
+    y < MAP_TOP_BOUND || y + size > MAP_BOTTOM_BOUND) {
+    active = false;
+}
+
     }
 
     void render(SDL_Renderer* renderer) const {
@@ -241,7 +243,7 @@ private:
 class bossExplosion {
 public:
     bossExplosion(SDL_Renderer* renderer, int x, int y)
-        : startTime(SDL_GetTicks()), duration(500), frameCount(12), currentFrame(0), frameWidth(96)
+        : startTime(SDL_GetTicks()), duration(300), frameCount(12), currentFrame(0), frameWidth(96)
     {
         explosionTexture = IMG_LoadTexture(renderer, "resource/image/bossExplosion.png");
         explosionSound = Mix_LoadWAV("resource/sound/bossExplosionSound.wav");

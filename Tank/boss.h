@@ -20,7 +20,7 @@
 enum Direction { UP, DOWN, LEFT, RIGHT };
 class Boss {
 public:
-    int remainingLives = 2;
+    int remainingLives = 20;
     bool isActive = true;
     int x, y;
     SDL_Rect rect;

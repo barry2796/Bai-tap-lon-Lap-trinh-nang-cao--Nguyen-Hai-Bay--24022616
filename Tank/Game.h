@@ -23,7 +23,8 @@ using namespace std;
 public:
     SDL_Window* window;
     SDL_Texture* heartTexture;
-    Mix_Music* backgroundMusic;
+    Mix_Music* backgroundMusic = nullptr;
+    Mix_Music* bossBackgroundMusic = nullptr;
     Mix_Chunk* shootSound = nullptr;
     Mix_Chunk* enemyShootSound = nullptr;
     Mix_Chunk* dieSound = nullptr;
@@ -32,13 +33,14 @@ public:
     Mix_Chunk* chooseSound = nullptr;
     Mix_Chunk* chooseSound2 = nullptr;
     Mix_Chunk* victorySound = nullptr;
+    Mix_Chunk* bossExplosionSound=nullptr;
     SDL_Renderer* renderer;
     bool running;
     bool isBossLevel=false;
     int scoreP1=0;
     int scoreP2=0;
     int currentLevel=1;
-    const int maxLevel=1;
+    const int maxLevel=19;
     vector<Wall> walls;
     vector<Stone> stones;
     vector<Bush> bushes;
@@ -50,7 +52,7 @@ public:
     PlayerTank player1;
     PlayerTank player2;
     Base base;
-    int enemyNumber = 1 ;
+    int enemyNumber = 10 ;
     vector<EnemyTank> enemies;
     TTF_Font* font;
     GameMode gameMode;
@@ -95,6 +97,7 @@ public:
     chooseSound = Mix_LoadWAV("resource/sound/chooseSound1.wav");
     chooseSound2 = Mix_LoadWAV("resource/sound/chooseSound2.wav");
     victorySound = Mix_LoadWAV("resource/sound/victory.wav");
+    bossExplosionSound = Mix_LoadWAV("resource/sound/bossExplosionSound.wav");
 
     if (!gameOverSound) {
         cerr << "Failed to load shoot sound! Error: " << Mix_GetError() << endl;
@@ -108,10 +111,12 @@ public:
     if (!backgroundMusic) {
         std::cerr << "Failed to load music! Error: " << Mix_GetError() << std::endl;
         running = false;
-    } else {
-        Mix_PlayMusic(backgroundMusic, 1);
     }
-
+    if(!isBossLevel){
+        Mix_HaltMusic();
+    backgroundMusic = Mix_LoadMUS("resource/sound/Sound.mp3");
+    Mix_PlayMusic(backgroundMusic, -1);
+    }
 
 
     if (TTF_Init() == -1) {
@@ -133,7 +138,7 @@ public:
 
 
 
-    Mix_VolumeMusic(10);
+    Mix_VolumeMusic(100);
     generateWalls();
     player1 = PlayerTank(9 * TILE_SIZE, (MAP_HEIGHT-2) * TILE_SIZE,renderer,"resource/image/playerOne.png");
     player2 = PlayerTank(5 * TILE_SIZE, (MAP_HEIGHT-2) * TILE_SIZE,renderer,"resource/image/playerTwo.png");
@@ -348,128 +353,47 @@ void renderLevel() {
     SDL_DestroyTexture(p2ScoreTexture);
 
     }
+
 }
 
 
-void renderGameOver(bool& gameRunning) {  // Truyền tham chiếu để thay đổi biến thực sự
-    // Clear màn hình
+void renderGameOver(bool& gameRunning) {
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
 
-    // Hiển thị thông báo Game Over
-    SDL_Color yellow = {255, 255, 0};
-    string gameOver = "GAME OVER!";
-    SDL_Surface* surface = TTF_RenderText_Blended(font, gameOver.c_str(), yellow);
-    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+    // Load ảnh Game Over
+    SDL_Texture* gameOverImage = IMG_LoadTexture(renderer, "resource/image/gameOver.png");
+    if (!gameOverImage) {
+        std::cerr << "Failed to load gameOver.png: " << IMG_GetError() << std::endl;
+        return;
+    }
+
+    int imgW, imgH;
+    SDL_QueryTexture(gameOverImage, NULL, NULL, &imgW, &imgH);
+
     SDL_Rect dstRect = {
-        SCREEN_WIDTH / 2 - surface->w / 2,
-        200,
-        surface->w,
-        surface->h
+        SCREEN_WIDTH / 2 - imgW / 2,
+        SCREEN_HEIGHT / 2 - imgH / 2,
+        imgW,
+        imgH
     };
 
-    SDL_RenderCopy(renderer, texture, NULL, &dstRect);
-
-    SDL_FreeSurface(surface);
-    SDL_DestroyTexture(texture);
-
-    // Hiển thị
+    SDL_RenderCopy(renderer, gameOverImage, NULL, &dstRect);
     SDL_RenderPresent(renderer);
+
+    // Phát âm thanh Game Over nếu có
     if (Mix_PlayChannel(-1, gameOverSound, 0) == -1) {
-                            cerr << "Failed to play sound: " << Mix_GetError() << endl;
-                        }
-    // Cập nhật trạng thái game
-    SDL_Delay(2000);
+        std::cerr << "Failed to play sound: " << Mix_GetError() << std::endl;
+    }
+
+    SDL_Delay(2000); // Đợi 2 giây
+
+    SDL_DestroyTexture(gameOverImage); // Giải phóng texture
 
     restartGame();
 }
 
-void renderVictory(){
-    //Tạo nền mờ (màu đen với độ trong suốt)
-            SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-            SDL_SetRenderDrawColor(renderer, 0, 0, 0, 200); // Màu đen mờ
-            SDL_Rect overlay = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
-            SDL_RenderFillRect(renderer, &overlay);
 
-            //Tạo chữ VICTORY lớn
-            TTF_Font* bigFont = TTF_OpenFont("PressStart2P.ttf", 72);
-            SDL_Color gold = {255, 215, 0, 255}; // Màu vàng
-
-            SDL_Surface* victorySurface = TTF_RenderText_Blended(bigFont, "VICTORY!", gold);
-            SDL_Texture* victoryTexture = SDL_CreateTextureFromSurface(renderer, victorySurface);
-
-            SDL_Rect victoryRect = {
-                SCREEN_WIDTH/2 - victorySurface->w/2,
-                SCREEN_HEIGHT/2 - victorySurface->h - 30,
-                victorySurface->w,
-                victorySurface->h
-            };
-            SDL_RenderCopy(renderer, victoryTexture, NULL, &victoryRect);
-
-            //Tạo dòng mô tả nhỏ hơn
-            TTF_Font* smallFont = TTF_OpenFont("PressStart2P.ttf", 24);
-            SDL_Color white = {255, 255, 255, 255};
-
-            SDL_Surface* descSurface = TTF_RenderText_Blended(smallFont, "You have defeated the final boss!", white);
-            SDL_Texture* descTexture = SDL_CreateTextureFromSurface(renderer, descSurface);
-
-            SDL_Rect descRect = {
-                SCREEN_WIDTH/2 - descSurface->w/2,
-                SCREEN_HEIGHT/2 + 30,
-                descSurface->w,
-                descSurface->h
-            };
-            SDL_RenderCopy(renderer, descTexture, NULL, &descRect);
-
-            //Hiển thị hướng dẫn tiếp tục
-            SDL_Surface* continueSurface = TTF_RenderText_Blended(smallFont, "Press ENTER to continue", white);
-            SDL_Texture* continueTexture = SDL_CreateTextureFromSurface(renderer, continueSurface);
-
-            SDL_Rect continueRect = {
-                SCREEN_WIDTH/2 - continueSurface->w/2,
-                SCREEN_HEIGHT - 100,
-                continueSurface->w,
-                continueSurface->h
-            };
-            SDL_RenderCopy(renderer, continueTexture, NULL, &continueRect);
-
-            //Cập nhật màn hình
-            SDL_RenderPresent(renderer);
-
-            //Phát âm thanh chiến thắng
-            if (victorySound) {
-                Mix_PlayChannel(-1, victorySound, 0);
-            }
-
-            //Chờ người chơi nhấn ENTER
-            bool waiting = true;
-            SDL_Event e;
-            while (waiting && running) {
-                while (SDL_PollEvent(&e)) {
-                    if (e.type == SDL_QUIT) {
-                        running = false;
-                        waiting = false;
-                    } else if (e.type == SDL_KEYDOWN) {
-                        if (e.key.keysym.sym == SDLK_RETURN || e.key.keysym.sym == SDLK_KP_ENTER) {
-                            waiting = false;
-                        }
-                    }
-                }
-                SDL_Delay(16);
-            }
-
-            //Giải phóng bộ nhớ
-            SDL_FreeSurface(victorySurface);
-            SDL_DestroyTexture(victoryTexture);
-            SDL_FreeSurface(descSurface);
-            SDL_DestroyTexture(descTexture);
-            SDL_FreeSurface(continueSurface);
-            SDL_DestroyTexture(continueTexture);
-            TTF_CloseFont(bigFont);
-            TTF_CloseFont(smallFont);
-
-            running = false; // Thoát game
-        }
 
 void restartGame() {
     bool inRestart = true;
@@ -791,8 +715,7 @@ void update() {
                 boss.remainingLives--;
                 bullet.active = false;
                 if (boss.remainingLives <= 0) {
-                    bossExplosions.emplace_back(renderer, boss.rect.x, boss.rect.y);
-                    Mix_PlayChannel(-1, bossExplosions.back().explosionSound, 0);
+
                     boss.isActive = false;
                     scoreP1 += 500; // Thưởng điểm khi đánh bại boss
                 }
@@ -805,8 +728,7 @@ void update() {
                     boss.remainingLives--;
                     bullet.active = false;
                     if (boss.remainingLives <= 0) {
-                        bossExplosions.emplace_back(renderer, boss.rect.x, boss.rect.y);
-                        Mix_PlayChannel(-1, bossExplosions.back().explosionSound, 0);
+
                         boss.isActive = false;
                         scoreP2 += 500; // Thưởng điểm khi đánh bại boss
                     }
@@ -838,7 +760,7 @@ void update() {
             for (auto& wall : walls) {
                 if (wall.active && SDL_HasIntersection(&bullet->rect, &wall.rect)) {
                     wall.active = false;
-                    bullet->active = false;
+
                     wallExplosions.emplace_back(renderer, wall.rect.x, wall.rect.y);
                     Mix_PlayChannel(-1, wallExplosions.back().explosionSound, 0);
                     break;
@@ -861,14 +783,165 @@ void update() {
             }
         }
 
+        for (auto& bigBullet : boss.bigBullets) {
+                if (bigBullet->active && SDL_HasIntersection(&bigBullet->rect, &player1.rect)) {
+                    if (player1.remainingLives > 1) {
+                        player1.remainingLives--;
+                        bigBullet->active = false;
+                    } else {
+                        renderGameOver(running);
+                    }
+                }
+
+                if (gameMode == TWO_PLAYER && bigBullet->active && SDL_HasIntersection(&bigBullet->rect, &player2.rect)) {
+                    if (player2.remainingLives > 1) {
+                        player2.remainingLives--;
+                        bigBullet->active = false;
+                    } else {
+                        renderGameOver(running);
+                    }
+                }
+
+                // Va chạm với tường
+                for (auto& wall : walls) {
+                    if (wall.active && SDL_HasIntersection(&bigBullet->rect, &wall.rect)) {
+                        wall.active = false;
+                        bigBullet->active = false;
+                        wallExplosions.emplace_back(renderer, wall.rect.x, wall.rect.y);
+                        Mix_PlayChannel(-1, wallExplosions.back().explosionSound, 0);
+                        break;
+                    }
+                }
+
+                // Va chạm với đá
+                for (auto& stone : stones) {
+                    if (stone.active && SDL_HasIntersection(&bigBullet->rect, &stone.rect)) {
+                        bigBullet->active = false;
+                        break;
+                    }
+                }
+
+                // Va chạm với base
+                if (bigBullet->active && SDL_HasIntersection(&bigBullet->rect, &base.rect)) {
+                    bigBullet->active = false;
+                    base.active = false;
+                    renderGameOver(running);
+                }
+            }
+
         // Xóa đạn không active của boss
         boss.bullets.erase(std::remove_if(boss.bullets.begin(), boss.bullets.end(),
             [](const std::unique_ptr<Bullet>& b) { return !b->active; }), boss.bullets.end());
-
+        boss.bigBullets.erase(std::remove_if(boss.bigBullets.begin(), boss.bigBullets.end(),
+            [](const std::unique_ptr<BigBullet>& b) { return !b->active; }), boss.bigBullets.end());
         // Kiểm tra nếu boss bị tiêu diệt
         if (!boss.isActive) {
                 bossExplosions.emplace_back(renderer, boss.rect.x, boss.rect.y);
-                renderVictory();
+                if (bossExplosionSound) {
+                    Mix_PlayChannel(-1, bossExplosionSound, 0); // phát 1 lần
+                }
+                Uint32 explosionStart = SDL_GetTicks();
+                const Uint32 explosionDuration = 1500;
+
+                // Vòng lặp render vụ nổ
+                while (SDL_GetTicks() - explosionStart < explosionDuration) {
+                    SDL_Event e;
+                    while (SDL_PollEvent(&e)) {
+                        if (e.type == SDL_QUIT) {
+                            running = false;
+                            return;
+                        }
+                    }
+
+                    render(); // <- dùng chính hàm render() của bạn để vẽ toàn bộ frame
+                    SDL_Delay(16); // ~60 FPS
+                }
+                //Tạo nền mờ (màu đen với độ trong suốt)
+            SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+            SDL_SetRenderDrawColor(renderer, 0, 0, 0, 200); // Màu đen mờ
+            SDL_Rect overlay = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
+            SDL_RenderFillRect(renderer, &overlay);
+
+            // Tải ảnh victory
+                SDL_Texture* victoryImage = IMG_LoadTexture(renderer, "resource/image/victory.png");
+
+                // Lấy kích thước ảnh
+                int imgW, imgH;
+                SDL_QueryTexture(victoryImage, NULL, NULL, &imgW, &imgH);
+
+                // Tính vị trí để căn giữa
+                SDL_Rect victoryRect = {
+                    SCREEN_WIDTH / 2 - imgW / 2,
+                    SCREEN_HEIGHT / 2 - imgH / 2,
+                    imgW,
+                    imgH
+                };
+
+                // Render ảnh
+                SDL_RenderCopy(renderer, victoryImage, NULL, &victoryRect);
+
+
+            //Tạo dòng mô tả nhỏ hơn
+            TTF_Font* smallFont = TTF_OpenFont("PressStart2P.ttf", 24);
+            SDL_Color white = {255, 255, 255, 255};
+
+            SDL_Surface* descSurface = TTF_RenderText_Blended(smallFont, "You have defeated the final boss!", white);
+            SDL_Texture* descTexture = SDL_CreateTextureFromSurface(renderer, descSurface);
+
+            SDL_Rect descRect = {
+                SCREEN_WIDTH/2 - descSurface->w/2,
+                SCREEN_HEIGHT/2 + 30,
+                descSurface->w,
+                descSurface->h
+            };
+            SDL_RenderCopy(renderer, descTexture, NULL, &descRect);
+
+            //Hiển thị hướng dẫn tiếp tục
+            SDL_Surface* continueSurface = TTF_RenderText_Blended(smallFont, "Press ENTER to continue", white);
+            SDL_Texture* continueTexture = SDL_CreateTextureFromSurface(renderer, continueSurface);
+
+            SDL_Rect continueRect = {
+                SCREEN_WIDTH/2 - continueSurface->w/2,
+                SCREEN_HEIGHT - 100,
+                continueSurface->w,
+                continueSurface->h
+            };
+            SDL_RenderCopy(renderer, continueTexture, NULL, &continueRect);
+
+            //Cập nhật màn hình
+            SDL_RenderPresent(renderer);
+
+            //Phát âm thanh chiến thắng
+            if (victorySound) {
+                Mix_PlayChannel(-1, victorySound, 0);
+            }
+
+            //Chờ người chơi nhấn ENTER
+            bool waiting = true;
+            SDL_Event e;
+            while (waiting && running) {
+                while (SDL_PollEvent(&e)) {
+                    if (e.type == SDL_QUIT) {
+                        running = false;
+                        waiting = false;
+                    } else if (e.type == SDL_KEYDOWN) {
+                        if (e.key.keysym.sym == SDLK_RETURN || e.key.keysym.sym == SDLK_KP_ENTER) {
+                            waiting = false;
+                        }
+                    }
+                }
+                SDL_Delay(16);
+            }
+
+            //Giải phóng bộ nhớ
+            SDL_DestroyTexture(victoryImage);
+            SDL_FreeSurface(descSurface);
+            SDL_DestroyTexture(descTexture);
+            SDL_FreeSurface(continueSurface);
+            SDL_DestroyTexture(continueTexture);
+            TTF_CloseFont(smallFont);
+
+            running = false; // Thoát game
         }
     }
     player1.updateBullets();
@@ -1035,6 +1108,9 @@ if (enemies.empty()) {
     else if (!isBossLevel) {
         // Lần đầu đến boss
         isBossLevel = true;
+        Mix_HaltMusic();
+            bossBackgroundMusic = Mix_LoadMUS("resource/sound/bossTheme.mp3");
+            Mix_PlayMusic(bossBackgroundMusic, -1);
         cout << "Entering BOSS LEVEL!\n";
         generateBossLevel(); // <-- Tạo hàm riêng để load map boss
         boss = Boss(TILE_SIZE * 5, TILE_SIZE *5, renderer);
