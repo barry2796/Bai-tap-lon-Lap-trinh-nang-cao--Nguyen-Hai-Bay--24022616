@@ -12,5 +12,8 @@ const int TILE_SIZE = 40;
 const int MAP_WIDTH = SCREEN_WIDTH / TILE_SIZE;
 const int MAP_HEIGHT = SCREEN_HEIGHT / TILE_SIZE;
 const int WALL_TILE_SIZE = 20;
-
+enum GameMode {
+    ONE_PLAYER,
+    TWO_PLAYER
+};
 #endif // CONST_H

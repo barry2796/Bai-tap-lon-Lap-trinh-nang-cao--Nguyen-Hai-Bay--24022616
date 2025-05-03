@@ -7,6 +7,8 @@
 #include <iostream>
 #include "Const.h"
 
+#include <cmath>
+
 #define BULLET_SIZE 10
 const int speed = 5;
 class Bullet {
@@ -126,6 +128,7 @@ public:
         }
     }
 };
+
 
 class wallExplosion {
 public:

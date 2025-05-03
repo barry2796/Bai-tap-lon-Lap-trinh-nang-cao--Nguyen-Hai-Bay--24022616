@@ -11,10 +11,7 @@
 #include "EnemyTank.h"
 #include "boss.h"
 
-enum GameMode {
-    ONE_PLAYER,
-    TWO_PLAYER
-};
+
 
 using namespace std;
 
@@ -40,7 +37,7 @@ public:
     int scoreP1=0;
     int scoreP2=0;
     int currentLevel=1;
-    const int maxLevel=19;
+    const int maxLevel=1;
     vector<Wall> walls;
     vector<Stone> stones;
     vector<Bush> bushes;
@@ -52,7 +49,10 @@ public:
     PlayerTank player1;
     PlayerTank player2;
     Base base;
-    int enemyNumber = 10 ;
+    int enemyNumber = 1 ;
+    int enemiesSpawned = 0;
+    Uint32 lastSpawnTime = 0;
+
     vector<EnemyTank> enemies;
     TTF_Font* font;
     GameMode gameMode;
@@ -353,6 +353,37 @@ void renderLevel() {
     SDL_DestroyTexture(p2ScoreTexture);
 
     }
+    if (isBossLevel) {
+        // Thông số thanh máu
+        int barX = 50;
+        int barY = 10;
+        int barWidth = 300;
+        int barHeight = 20;
+
+        // Tính phần trăm máu boss còn lại
+        int bossMaxLives = 20; // <-- gán đúng với số mạng gốc của boss
+        float hpRatio = static_cast<float>(boss.remainingLives) / bossMaxLives;
+
+        // Vẽ nền xám
+        SDL_Rect backRect = { barX, barY, barWidth, barHeight };
+        SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255); // xám
+        SDL_RenderFillRect(renderer, &backRect);
+
+        // Vẽ thanh đỏ thể hiện máu
+        SDL_Rect hpRect = { barX, barY, static_cast<int>(barWidth * hpRatio), barHeight };
+        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); // đỏ
+        SDL_RenderFillRect(renderer, &hpRect);
+
+        // Vẽ chữ "BOSS"
+        SDL_Color white = {255, 255, 255};
+        SDL_Surface* textSurface = TTF_RenderText_Blended(font, "BOSS", white);
+        SDL_Texture* textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+        SDL_Rect textRect = { barX + barWidth + 10, barY, textSurface->w, textSurface->h };
+        SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
+        SDL_FreeSurface(textSurface);
+        SDL_DestroyTexture(textTexture);
+    }
+
 
 }
 
@@ -449,6 +480,8 @@ void restartGame() {
                             // Reset game
                             currentLevel = 1;
                             isBossLevel=false;
+                            int enemiesSpawned = 0;
+                            Uint32 lastSpawnTime = 0;
                             player1 = PlayerTank(9 * TILE_SIZE, (MAP_HEIGHT - 2) * TILE_SIZE, renderer, "resource/image/playerOne.png");
                             player1.remainingLives = 3;
                             player1.bullets.clear();
@@ -707,7 +740,8 @@ void handleEvents() {
 //UPDATE
 void update() {
     if(isBossLevel){
-        boss.update();
+        boss.update(/*&player1, &player2, gameMode*/);
+
 
         // Kiểm tra va chạm đạn player với boss
         for (auto& bullet : player1.bullets) {
@@ -760,7 +794,7 @@ void update() {
             for (auto& wall : walls) {
                 if (wall.active && SDL_HasIntersection(&bullet->rect, &wall.rect)) {
                     wall.active = false;
-
+                    bullet->active=false;
                     wallExplosions.emplace_back(renderer, wall.rect.x, wall.rect.y);
                     Mix_PlayChannel(-1, wallExplosions.back().explosionSound, 0);
                     break;
@@ -806,7 +840,7 @@ void update() {
                 for (auto& wall : walls) {
                     if (wall.active && SDL_HasIntersection(&bigBullet->rect, &wall.rect)) {
                         wall.active = false;
-                        bigBullet->active = false;
+
                         wallExplosions.emplace_back(renderer, wall.rect.x, wall.rect.y);
                         Mix_PlayChannel(-1, wallExplosions.back().explosionSound, 0);
                         break;
@@ -1090,7 +1124,7 @@ enemies.erase(std::remove_if(enemies.begin(), enemies.end(),
 
 
 //Nếu bắn chết hết
-if (enemies.empty()) {
+if (enemies.empty() /*&& enemiesSpawned >= enemyNumber*/) {
         SDL_Delay(50);
     if (currentLevel < maxLevel) {
     currentLevel++;
@@ -1105,23 +1139,53 @@ if (enemies.empty()) {
     }
     base.active = true;
     }
-    else if (!isBossLevel) {
+        else if (!isBossLevel) {
         // Lần đầu đến boss
         isBossLevel = true;
         Mix_HaltMusic();
-            bossBackgroundMusic = Mix_LoadMUS("resource/sound/bossTheme.mp3");
-            Mix_PlayMusic(bossBackgroundMusic, -1);
-        cout << "Entering BOSS LEVEL!\n";
+        bossBackgroundMusic = Mix_LoadMUS("resource/sound/bossTheme.mp3");
+        Mix_PlayMusic(bossBackgroundMusic, -1);
+
+        // Vẽ nền đen
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); // Màu đen
+        SDL_RenderClear(renderer);
+
+        // Hiển thị dòng chữ "Entering BOSS LEVEL!"
+        TTF_Font* font = TTF_OpenFont("PressStart2P.ttf", 32);
+        if (font) {
+            SDL_Color color = {255, 0, 0}; // Màu đỏ
+            SDL_Surface* surface = TTF_RenderText_Solid(font, "Entering BOSS LEVEL!", color);
+            if (surface) {
+                SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+                if (texture) {
+                    SDL_Rect dstRect = {
+                        SCREEN_WIDTH / 2 - surface->w / 2,
+                        SCREEN_HEIGHT / 2 - surface->h / 2,
+                        surface->w, surface->h
+                    };
+                    SDL_RenderCopy(renderer, texture, NULL, &dstRect);
+                    SDL_RenderPresent(renderer);
+                    SDL_Delay(2000); // Hiển thị trong 2 giây
+
+                    SDL_DestroyTexture(texture);
+                }
+                SDL_FreeSurface(surface);
+            }
+            TTF_CloseFont(font);
+        }
+
         generateBossLevel(); // <-- Tạo hàm riêng để load map boss
         boss = Boss(TILE_SIZE * 5, TILE_SIZE *5, renderer);
         player1 = PlayerTank(9 * TILE_SIZE, (MAP_HEIGHT - 2) * TILE_SIZE, renderer, "resource/image/playerOne.png");
         player1.bullets.clear();
-        if(gameMode==TWO_PLAYER){
+        if(gameMode == TWO_PLAYER) {
             player2 = PlayerTank(5 * TILE_SIZE, (MAP_HEIGHT - 2) * TILE_SIZE, renderer, "resource/image/playerTwo.png");
             player2.bullets.clear();
         }
         base.active = true;
     }
+
+
    /* else {
         cout << "WIN GAME! YOU BEAT THE BOSS!" << endl;
         running = false;
@@ -1282,6 +1346,7 @@ void spawnEnemies() {
             std::cerr << "Không thể tìm vị trí spawn hợp lệ cho xe tăng địch sau " << maxAttempts << " lần thử.\n";
         }
     }
+
 }
 
 

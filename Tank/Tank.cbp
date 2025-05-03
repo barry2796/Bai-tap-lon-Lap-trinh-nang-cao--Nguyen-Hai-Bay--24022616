@@ -40,6 +40,7 @@
 		<Unit filename="Tank code.cpp" />
 		<Unit filename="Tank.h" />
 		<Unit filename="Wall.h" />
+		<Unit filename="boss.h" />
 		<Extensions />
 	</Project>
 </CodeBlocks_project_file>
