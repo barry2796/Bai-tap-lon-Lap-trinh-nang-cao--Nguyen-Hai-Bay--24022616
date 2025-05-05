@@ -96,7 +96,7 @@ public:
         case RIGHT:
             bigDx = 1; bigDy = 0;
             bigBulletX = rect.x + rect.w + distance;
-            bigBulletY = cy;
+            bigBulletY = cy-15;
             break;
         case DOWN:
             bigDx = 0; bigDy = 1;
@@ -106,7 +106,7 @@ public:
         case LEFT:
             bigDx = -1; bigDy = 0;
             bigBulletX = rect.x - distance;
-            bigBulletY = cy;
+            bigBulletY = cy-15;
             break;
     }
 

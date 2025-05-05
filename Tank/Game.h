@@ -37,7 +37,7 @@ public:
     int scoreP1=0;
     int scoreP2=0;
     int currentLevel=1;
-    const int maxLevel=1;
+    const int maxLevel=2;
     vector<Wall> walls;
     vector<Stone> stones;
     vector<Bush> bushes;
@@ -49,7 +49,7 @@ public:
     PlayerTank player1;
     PlayerTank player2;
     Base base;
-    int enemyNumber = 1 ;
+    int enemyNumber = 10 ;
     int enemiesSpawned = 0;
     Uint32 lastSpawnTime = 0;
 
@@ -482,6 +482,8 @@ void restartGame() {
                             isBossLevel=false;
                             int enemiesSpawned = 0;
                             Uint32 lastSpawnTime = 0;
+                            scoreP1=0;
+                            scoreP2=0;
                             player1 = PlayerTank(9 * TILE_SIZE, (MAP_HEIGHT - 2) * TILE_SIZE, renderer, "resource/image/playerOne.png");
                             player1.remainingLives = 3;
                             player1.bullets.clear();
@@ -716,7 +718,7 @@ void handleEvents() {
     } else if (keystates[SDL_SCANCODE_DOWN]) {
         player1.move(0, 2, walls, stones, bushes, ice, water,base);
     }
-    if (keystates[SDL_SCANCODE_LEFT]) {
+     if (keystates[SDL_SCANCODE_LEFT]) {
         player1.move(-2, 0, walls, stones, bushes, ice, water,base);
     } else if (keystates[SDL_SCANCODE_RIGHT]) {
         player1.move(2, 0, walls, stones, bushes, ice, water,base);
