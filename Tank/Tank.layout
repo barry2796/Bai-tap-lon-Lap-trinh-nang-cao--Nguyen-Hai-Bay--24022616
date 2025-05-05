@@ -7,19 +7,6 @@
 			<Cursor1 position="0" topLine="0" />
 		</Cursor>
 	</File>
-	<File name="Bullet.h" open="1" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="3755" topLine="39" />
-		</Cursor>
-		<Folding>
-			<Collapse line="188" />
-		</Folding>
-	</File>
-	<File name="Game.h" open="1" top="1" tabpos="3" split="0" active="1" splitpos="0" zoom_1="-1" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1325" topLine="30" />
-		</Cursor>
-	</File>
 	<File name="Wall.h" open="1" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="4477" topLine="0" />
@@ -34,19 +21,27 @@
 			<Collapse line="130" />
 		</Folding>
 	</File>
-	<File name="Const.h" open="1" top="0" tabpos="8" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="Game.h" open="1" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="-1" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="514" topLine="0" />
+			<Cursor1 position="1003" topLine="33" />
 		</Cursor>
 	</File>
-	<File name="Tank.h" open="1" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="-1" zoom_2="0">
+	<File name="boss.h" open="1" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="179" topLine="176" />
+			<Cursor1 position="534" topLine="15" />
 		</Cursor>
+	</File>
+	<File name="Bullet.h" open="1" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="3755" topLine="0" />
+		</Cursor>
+		<Folding>
+			<Collapse line="188" />
+		</Folding>
 	</File>
 	<File name="EnemyTank.h" open="1" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="325" topLine="0" />
+			<Cursor1 position="560" topLine="0" />
 		</Cursor>
 		<Folding>
 			<Collapse line="32" />
@@ -57,8 +52,6 @@
 			<Collapse line="144" />
 			<Collapse line="169" />
 			<Collapse line="170" />
-			<Collapse line="196" />
-			<Collapse line="199" />
 			<Collapse line="205" />
 			<Collapse line="208" />
 			<Collapse line="212" />
@@ -67,9 +60,14 @@
 			<Collapse line="234" />
 		</Folding>
 	</File>
-	<File name="boss.h" open="1" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="Const.h" open="1" top="1" tabpos="8" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="533" topLine="30" />
+			<Cursor1 position="535" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="Tank.h" open="1" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="-1" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="179" topLine="176" />
 		</Cursor>
 	</File>
 	<File name="Tank code.cpp" open="1" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">

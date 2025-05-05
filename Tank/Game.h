@@ -37,7 +37,7 @@ public:
     int scoreP1=0;
     int scoreP2=0;
     int currentLevel=1;
-    const int maxLevel=2;
+    const int maxLevel=10;
     vector<Wall> walls;
     vector<Stone> stones;
     vector<Bush> bushes;
@@ -714,27 +714,27 @@ void handleEvents() {
 
     // Player 1
     if (keystates[SDL_SCANCODE_UP]) {
-        player1.move(0, -2, walls, stones, bushes, ice, water,base);
+        player1.move(0, -2, walls, stones, bushes, ice, water,base,enemies);
     } else if (keystates[SDL_SCANCODE_DOWN]) {
-        player1.move(0, 2, walls, stones, bushes, ice, water,base);
+        player1.move(0, 2, walls, stones, bushes, ice, water,base,enemies);
     }
      if (keystates[SDL_SCANCODE_LEFT]) {
-        player1.move(-2, 0, walls, stones, bushes, ice, water,base);
+        player1.move(-2, 0, walls, stones, bushes, ice, water,base,enemies);
     } else if (keystates[SDL_SCANCODE_RIGHT]) {
-        player1.move(2, 0, walls, stones, bushes, ice, water,base);
+        player1.move(2, 0, walls, stones, bushes, ice, water,base,enemies);
     }
 
     // Player 2
     if(gameMode== TWO_PLAYER){
                 if (keystates[SDL_SCANCODE_W]) {
-                    player2.move(0, -2, walls, stones, bushes, ice, water,base);
+                    player2.move(0, -2, walls, stones, bushes, ice, water,base,enemies);
                 } else if (keystates[SDL_SCANCODE_S]) {
-                    player2.move(0, 2, walls, stones, bushes, ice, water,base);
+                    player2.move(0, 2, walls, stones, bushes, ice, water,base,enemies);
                 }
                 if (keystates[SDL_SCANCODE_A]) {
-                    player2.move(-2, 0, walls, stones, bushes, ice, water,base);
+                    player2.move(-2, 0, walls, stones, bushes, ice, water,base,enemies);
                 } else if (keystates[SDL_SCANCODE_D]) {
-                    player2.move(2, 0, walls, stones, bushes, ice, water,base);
+                    player2.move(2, 0, walls, stones, bushes, ice, water,base,enemies);
                 }
     }
 }
@@ -987,9 +987,9 @@ void update() {
 
     for (auto& enemy : enemies) {
 
-        enemy.moveTowardPlayer(player1.x,player1.y,walls, stones, bushes, ice, water,base);
+        enemy.moveTowardPlayer(player1.x,player1.y,walls, stones, bushes, ice, water,base,enemies);
         if(gameMode== TWO_PLAYER){
-               enemy.moveTowardPlayer(player2.x,player2.y,walls, stones, bushes, ice, water,base);
+               enemy.moveTowardPlayer(player2.x,player2.y,walls, stones, bushes, ice, water,base,enemies);
         }
         enemy.updateBullets();
         if (rand() % 100 < 2) {

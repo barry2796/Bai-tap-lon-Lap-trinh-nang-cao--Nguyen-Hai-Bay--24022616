@@ -55,62 +55,12 @@ public:
         active = true;
     }
 
-
-
- /*
-void move(const vector<Wall>& walls) {
-    if (--moveDelay > 0) return; // đợi đến khi hết delay mới cho di chuyển
-
-    moveDelay = 60; // càng cao thì tank càng di chuyển chậm (ví dụ 30 là chậm vừa phải)
-
-
-    // Random chọn hướng
-    int direction = rand() % 4;
-    int dx = 0, dy = 0;
-
-    switch (direction) {
-        case 0: dy = -5; break; // UP
-        case 1: dy = 5; break;  // DOWN
-        case 2: dx = -5; break; // LEFT
-        case 3: dx = 5; break;  // RIGHT
-    }
-
-    // Thử di chuyển như hàm move() thường
-    int newX = x + dx;
-    int newY = y + dy;
-
-    SDL_Rect newRect = { newX, newY, TILE_SIZE, TILE_SIZE };
-    for (int i = 0; i < walls.size(); i++) {
-        if (walls[i].active && SDL_HasIntersection(&newRect, &walls[i].rect)) {
-            return; // Va vào tường -> không di chuyển
-        }
-    }
-
-    if (newX >= TILE_SIZE && newX <= SCREEN_WIDTH - TILE_SIZE * 2 &&
-        newY >= TILE_SIZE && newY <= SCREEN_HEIGHT - TILE_SIZE * 2) {
-        x = newX;
-        y = newY;
-        rect.x = x;
-        rect.y = y;
-    }
-
-    // Cập nhật hướng
-    dirX = dx;
-    dirY = dy;
-
-    if (dx < 0) dir = RIGHT;
-    else if (dx > 0) dir = LEFT;
-    else if (dy < 0) dir = DOWN;
-    else if (dy > 0) dir = UP;
-}
-*/
-
 bool isHidden;
 bool isIce;
 
 
 //Hàm cho xe tăng di chuyển về phía người chơi
-void moveTowardPlayer(int playerX, int playerY, const vector<Wall>& walls,const vector<Stone>& stones,const vector<Bush>& bushes,const vector<Ice>& ices,const vector<Water>& watered,const Base base) {
+void moveTowardPlayer(int playerX, int playerY, const vector<Wall>& walls,const vector<Stone>& stones,const vector<Bush>& bushes,const vector<Ice>& ices,const vector<Water>& watered,const Base base,const vector<EnemyTank>& enemies) {
     if (--moveDelay > 0) return;
 
     moveDelay =50; // delay càng cao thì tank càng chậm
@@ -142,6 +92,14 @@ void moveTowardPlayer(int playerX, int playerY, const vector<Wall>& walls,const 
             return; // va đá, không di chuyển
         }
     }
+    for (const auto& other : enemies) {
+    // Nếu chính nó thì bỏ qua — so sánh qua địa chỉ
+    if (&other == this) continue;
+
+    if (other.active && SDL_HasIntersection(&newRect, &other.rect)) {
+        return; // Va chạm với enemy khác
+    }
+}
     if (newX < TILE_SIZE || newY < TILE_SIZE ||
         newX + TILE_SIZE > SCREEN_WIDTH - TILE_SIZE * 6 ||
         newY + TILE_SIZE > SCREEN_HEIGHT - TILE_SIZE) {

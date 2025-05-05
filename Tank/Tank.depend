@@ -11,7 +11,7 @@
 	<ctime>
 	<cstdlib>
 
-1746240460 d:\tap tanh code game\bai tap lon lap trinh nang cao- nguyen hai bay- 24022616\bai-tap-lon-lap-trinh-nang-cao--nguyen-hai-bay--24022616\tank\tank.h
+1746449905 d:\tap tanh code game\bai tap lon lap trinh nang cao- nguyen hai bay- 24022616\bai-tap-lon-lap-trinh-nang-cao--nguyen-hai-bay--24022616\tank\tank.h
 	"Const.h"
 	<SDL.h>
 	<SDL_image.h>
@@ -19,10 +19,11 @@
 	"Wall.h"
 	"Bullet.h"
 	<algorithm>
+	"EnemyTank.h"
 
 1742044441 d:\tap tanh code game\bai tap lon lap trinh nang cao- nguyen hai bay- 24022616\bai-tap-lon-lap-trinh-nang-cao--nguyen-hai-bay--24022616\tank\map.h
 
-1746404795 d:\tap tanh code game\bai tap lon lap trinh nang cao- nguyen hai bay- 24022616\bai-tap-lon-lap-trinh-nang-cao--nguyen-hai-bay--24022616\tank\game.h
+1746450617 d:\tap tanh code game\bai tap lon lap trinh nang cao- nguyen hai bay- 24022616\bai-tap-lon-lap-trinh-nang-cao--nguyen-hai-bay--24022616\tank\game.h
 	<iostream>
 	<SDL.h>
 	<vector>
@@ -39,7 +40,7 @@
 1746067474 d:\tap tanh code game\bai tap lon lap trinh nang cao- nguyen hai bay- 24022616\bai-tap-lon-lap-trinh-nang-cao--nguyen-hai-bay--24022616\tank\wall.h
 	"Const.h"
 
-1746301759 d:\tap tanh code game\bai tap lon lap trinh nang cao- nguyen hai bay- 24022616\bai-tap-lon-lap-trinh-nang-cao--nguyen-hai-bay--24022616\tank\const.h
+1746449447 d:\tap tanh code game\bai tap lon lap trinh nang cao- nguyen hai bay- 24022616\bai-tap-lon-lap-trinh-nang-cao--nguyen-hai-bay--24022616\tank\const.h
 	<iostream>
 
 1746302329 d:\tap tanh code game\bai tap lon lap trinh nang cao- nguyen hai bay- 24022616\bai-tap-lon-lap-trinh-nang-cao--nguyen-hai-bay--24022616\tank\bullet.h
@@ -50,7 +51,7 @@
 	"Const.h"
 	<cmath>
 
-1746404931 d:\tap tanh code game\bai tap lon lap trinh nang cao- nguyen hai bay- 24022616\bai-tap-lon-lap-trinh-nang-cao--nguyen-hai-bay--24022616\tank\enemytank.h
+1746450599 d:\tap tanh code game\bai tap lon lap trinh nang cao- nguyen hai bay- 24022616\bai-tap-lon-lap-trinh-nang-cao--nguyen-hai-bay--24022616\tank\enemytank.h
 	<iostream>
 	<SDL.h>
 	<SDL_image.h>

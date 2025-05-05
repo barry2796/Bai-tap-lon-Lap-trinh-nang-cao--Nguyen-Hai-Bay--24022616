@@ -7,7 +7,7 @@
 #include "Wall.h"
 #include "Bullet.h"
 #include <algorithm>
-
+#include "EnemyTank.h"
 
 
 using namespace std;
@@ -70,7 +70,7 @@ public:
 
     bool isHidden;
     bool isIce;
-void move(int dx, int dy, const vector<Wall>& walls, const vector<Stone>& stones, const vector<Bush>& bushes,const vector<Ice>& ices,const vector<Water>& watered,const Base base) {
+void move(int dx, int dy, const vector<Wall>& walls, const vector<Stone>& stones, const vector<Bush>& bushes,const vector<Ice>& ices,const vector<Water>& watered,const Base base, const vector<EnemyTank>& enemies) {
     int newX = x + dx;
     int newY = y + dy;
     this->dirX = dx;
@@ -110,6 +110,12 @@ for (const auto& ice : ices) {
 if (base.active && SDL_HasIntersection(&newRect, &base.rect)) {
         return;
 }
+//kiem tra va cham ke dich
+    for (const auto& enemy : enemies) {
+        if (enemy.active && SDL_HasIntersection(&newRect, &enemy.rect)) {
+            return;
+        }
+    }
     // Giới hạn vùng di chuyển trong phần bản đồ
     if (newX < TILE_SIZE || newY < TILE_SIZE ||
         newX + TILE_SIZE >= SCREEN_WIDTH - TILE_SIZE * 6 ||
